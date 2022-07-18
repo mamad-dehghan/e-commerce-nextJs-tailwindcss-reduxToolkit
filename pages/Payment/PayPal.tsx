@@ -1,12 +1,12 @@
 import React from 'react';
 
 
-const _404 = () => {
+const PayPal = () => {
     return (
         <div>
-            404 page.
+            PayPal page.
         </div>
     );
 }
 
-export default _404;
+export default PayPal;

@@ -1,12 +1,12 @@
 import React from 'react';
 
 
-const _404 = () => {
+const SignIn = () => {
     return (
         <div>
-            404 page.
+            sign in page.
         </div>
     );
 }
 
-export default _404;
+export default SignIn;

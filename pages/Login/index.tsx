@@ -1,12 +1,12 @@
 import React from 'react';
 
 
-const _404 = () => {
+const Login = () => {
     return (
         <div>
-            404 page.
+            login page.
         </div>
     );
 }
 
-export default _404;
+export default Login;

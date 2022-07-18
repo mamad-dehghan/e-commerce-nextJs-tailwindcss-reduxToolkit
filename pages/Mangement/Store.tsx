@@ -1,12 +1,12 @@
 import React from 'react';
 
 
-const _404 = () => {
+const Store = () => {
     return (
         <div>
-            404 page.
+            management store page.
         </div>
     );
 }
 
-export default _404;
+export default Store;

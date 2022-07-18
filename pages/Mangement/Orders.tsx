@@ -1,12 +1,12 @@
 import React from 'react';
 
 
-const _404 = () => {
+const Orders = () => {
     return (
         <div>
-            404 page.
+            management orders page.
         </div>
     );
 }
 
-export default _404;
+export default Orders;
