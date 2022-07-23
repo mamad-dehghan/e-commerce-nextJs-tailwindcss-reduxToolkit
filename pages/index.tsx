@@ -3,6 +3,8 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Header from "../layouts/Header";
 import Footer from "../layouts/Footer";
+import Accept from "../utilities/icons/Accept";
+import Reject from "../utilities/icons/Reject";
 
 const Home: NextPage = () => {
   return (
@@ -14,6 +16,8 @@ const Home: NextPage = () => {
         <Header />
         Home page.
         <Footer />
+        <Accept className='w-10 h-10 text-amber-500'/>
+        <Reject className='w-10 h-10 text-amber-500'/>
     </>
   )
 }
