@@ -1,18 +1,90 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/*import './utilities.css';*/
+
+@font-face {
+    font-family: IRYekan;
+    font-weight: 500;
+    src: url('../utilities/fonts/IRANYekanMedium/IRANYekanMedium.svg') format("svg"),
+    url('../utilities/fonts/IRANYekanMedium/IRANYekanMedium.woff') format("woff"),
+    url('../utilities/fonts/IRANYekanMedium/IRANYekanMedium.eot') format("embedded-opentype"),
+    url('../utilities/fonts/IRANYekanMedium/IRANYekanMedium.otf') format("opentype"),
+    url('../utilities/fonts/IRANYekanMedium/IRANYekanMedium.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: IRYekan;
+    font-weight: 700;
+    src: url('../utilities/fonts/IRANYekanExtraBold/IRANYekanExtraBold.svg') format("svg"),
+    url('../utilities/fonts/IRANYekanExtraBold/IRANYekanExtraBold.woff') format("woff"),
+    url('../utilities/fonts/IRANYekanExtraBold/IRANYekanExtraBold.eot') format("embedded-opentype"),
+    url('../utilities/fonts/IRANYekanExtraBold/IRANYekanExtraBold.otf') format("opentype"),
+    url('../utilities/fonts/IRANYekanExtraBold/IRANYekanExtraBold.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: IRYekan;
+    font-weight: 400;
+    src: url('../utilities/fonts/IRANYekanRegular/IRANYekanRegular.svg') format("svg"),
+    url('../utilities/fonts/IRANYekanRegular/IRANYekanRegular.woff') format("woff"),
+    url('../utilities/fonts/IRANYekanRegular/IRANYekanRegular.eot') format("embedded-opentype"),
+    url('../utilities/fonts/IRANYekanRegular/IRANYekanRegular.otf') format("opentype"),
+    url('../utilities/fonts/IRANYekanRegular/IRANYekanRegular.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: IRYekan;
+    font-weight: 300;
+    src: url('../utilities/fonts/IRANYekanLight/IRANYekanLight.svg') format("svg"),
+    url('../utilities/fonts/IRANYekanLight/IRANYekanLight.woff') format("woff"),
+    url('../utilities/fonts/IRANYekanLight/IRANYekanLight.eot') format("embedded-opentype"),
+    url('../utilities/fonts/IRANYekanLight/IRANYekanLight.otf') format("opentype"),
+    url('../utilities/fonts/IRANYekanLight/IRANYekanLight.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: IRYekan;
+    font-weight: 200;
+    src: url('../utilities/fonts/IRANYekanThin/IRANYekanThin.svg') format("svg"),
+    url('../utilities/fonts/IRANYekanThin/IRANYekanThin.woff') format("woff"),
+    url('../utilities/fonts/IRANYekanThin/IRANYekanThin.eot') format("embedded-opentype"),
+    url('../utilities/fonts/IRANYekanThin/IRANYekanThin.otf') format("opentype"),
+    url('../utilities/fonts/IRANYekanThin/IRANYekanThin.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: RubikWetPaint;
+    font-weight: 400;
+    src: url('../utilities/fonts/RubikWetPaintRegular/RubikWetPaintRegular.ttf') format("truetype");
+}
 
 html,
 body,
-#__next{
-  width: 100%;
-  height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+#__next {
+    width: 100%;
+    height: 100vh;
+    font-family: IRYekan,-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /*font-family:  SansSerif, serif;*/
+}
+
+
+@layer utilities {
+    .bg-primary {
+        @apply bg-gradient-to-r from-primary-red to-primary-orange;
+    }
+    .link{
+        @apply text-transparent bg-clip-text bg-weef-white cursor-pointer hover:bg-primary active:bg-primary ;
+    }
+    .Container{
+        @apply xl:px-8 max-w-[1440px];
+    }
+
 }
