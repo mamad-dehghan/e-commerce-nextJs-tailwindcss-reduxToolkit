@@ -19,7 +19,7 @@ function WeefIcon({fill, background, size = "small"}: props) {
             size === 'medium' ? 'w-[72px]':'',
             size === 'large' ? 'w-[140px]':'',
         );
-    }, [fill, background])
+    }, [background, fill, size])
 
     return (
         <svg className={svgClass}
