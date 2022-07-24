@@ -17,8 +17,8 @@ function Header() {
                 <div className='flex flex-row  gap-4'>
                     <Link href='/'><a className='link font-normal'>خانه</a></Link>
                     <Link href='/Basket'><a className='link font-medium'>داشبورد</a></Link>
-                    <Link href='/Login'><a className='link'>پنل مدیریت</a></Link>
-                    <Link href='/Signin'><a className='link'>وبلاگ</a></Link>
+                    <Link href='/Login'><a className='link font-medium'>پنل مدیریت</a></Link>
+                    <Link href='/Signin'><a className='link font-medium'>وبلاگ</a></Link>
                 </div>
                 <div className='flex items-center gap-2'>
                     <span className='text-transparent bg-clip-text bg-primary font-[RubikWetPaint] text-lg'>WEEF group</span>
