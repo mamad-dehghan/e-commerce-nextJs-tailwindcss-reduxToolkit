@@ -11,7 +11,7 @@ function Footer() {
         <div className='w-full bg-secondary flex flex-col border-t border-t-weef-black'>
             <div className='Container grow flex flex-col items-stretch justify-start px-8'>
                 <div className='py-4'>
-                    <p className='text-weef-white text-right font-extralight text-sm'>مجموعه ویف همواره در نظر داشته تا با کیفیت‌ترین کالاهای حوزه مربوط به خود را از بهترین برندهای ایرانی و خارجی، در اختیار مشتریان مشتریان خود قرار دهد.</p>
+                    <p className='text-weef-white text-right font-extralight text-sm'>مجموعه ویف همواره در نظر داشته تا با کیفیت‌ترین کالاهای حوزه مربوط به خود را از بهترین برندهای ایرانی و خارجی، در اختیار مشتریان خود قرار دهد.</p>
                 </div>
                 <div className='flex flex-row gap-4 py-4 px-6  border-y border-y-weef-black'>
                     <div className='flex flex-col items-start justify-start w-1/5 text-weef-white'>
