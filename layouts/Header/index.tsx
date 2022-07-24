@@ -20,7 +20,8 @@ function Header() {
                     <Link href='/Login'><a className='link'>پنل مدیریت</a></Link>
                     <Link href='/Signin'><a className='link'>وبلاگ</a></Link>
                 </div>
-                <div>
+                <div className='flex items-center gap-2'>
+                    <span className='text-transparent bg-clip-text bg-primary font-[RubikWetPaint] text-lg'>WEEF group</span>
                     <WeefIcon background='primary' fill='black'/>
                 </div>
             </div>
