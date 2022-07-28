@@ -3,19 +3,17 @@ import Header from "../Header";
 import Footer from "../Footer";
 
 type props = {
-    children: ReactElement ;
+    children: ReactElement;
 }
 
 const DefaultLayout = ({children}: props) => {
     return (
-        <div className='w-full min-h-screen flex flex-col gap-4 bg-secondary'>
+        <div className='w-full min-h-screen flex flex-col bg-secondary'>
             <Header/>
-            <>
-                {children}
-            </>
+            {children}
             <Footer/>
         </div>
     );
 }
 
-export default DefaultLayout;
+export default React.memo(DefaultLayout);
