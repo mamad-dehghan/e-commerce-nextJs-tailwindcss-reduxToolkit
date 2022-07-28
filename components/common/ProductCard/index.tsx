@@ -39,7 +39,7 @@ const ProductCard = ({title, price, image, sizes, colors}: props) => {
 
     const classNameColorPalette = useMemo(() => {
         return classNames(
-            'flex flex-col justify-between py-5 px-2 transition-all duration-500 items-center ',
+            'flex flex-col justify-between py-5 transition-all duration-500 items-center ',
             hover ? 'h-full' : 'h-[6.5rem]'
         )
     }, [hover]);
@@ -47,7 +47,7 @@ const ProductCard = ({title, price, image, sizes, colors}: props) => {
 
     return (
         <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-             className='relative cursor-pointer items-stretch justify-items-stretch w-[17.5rem] h-80 ring-1 ring-primary-red overflow-hidden rounded'>
+             className='relative cursor-pointer items-stretch justify-items-stretch w-[15.5rem] h-80 ring-1 ring-primary-red overflow-hidden rounded'>
             <div className={classNameTop}>
                 <span>سایزهای موجود:</span>
                 {sizes && sizes.map(size => (
