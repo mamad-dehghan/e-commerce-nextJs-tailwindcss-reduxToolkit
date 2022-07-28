@@ -83,7 +83,7 @@ body,
         @apply text-transparent bg-clip-text bg-weef-white cursor-pointer hover:bg-primary active:bg-primary ;
     }
     .Container{
-        @apply xl:px-8 max-w-[1440px];
+        @apply md:px-2 xl:px-2 max-w-[1440px] mx-auto w-full ;
     }
 
 }
