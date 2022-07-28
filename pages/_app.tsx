@@ -1,7 +1,9 @@
 import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import '../styles/carousel.scss'
+import '../styles/cardSlider.scss'
+import type {AppProps} from 'next/app'
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({Component, pageProps}: AppProps) {
   return <Component {...pageProps} />
 }
 
