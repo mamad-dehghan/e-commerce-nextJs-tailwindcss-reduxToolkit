@@ -1,0 +1,11 @@
+#carousel {
+  .swiper-slide-active {
+    z-index: 20;
+    .banner{
+      transition: all;
+      transition-duration: 300ms;
+      scale: 140%;
+      z-index: 20;
+    }
+  }
+}

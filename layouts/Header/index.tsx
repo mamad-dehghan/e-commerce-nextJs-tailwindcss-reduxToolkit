@@ -6,7 +6,7 @@ import SearchInput from "../../components/common/SearchInput";
 
 function Header() {
     return (
-        <div className='w-full bg-weef-black flex flex-col '>
+        <div className='w-full bg-weef-black flex'>
             <div className='Container grow flex items-center justify-between px-8 py-2'>
                 <div className='flex items-center gap-4'>
                     <Link href='/Basket'>

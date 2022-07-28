@@ -1,0 +1,40 @@
+$sm: 640px;
+// => @media (min-width: 640px) { ... }
+$md: 768px;
+// => @media (min-width: 768px) { ... }
+$lg: 1024px;
+// => @media (min-width: 1024px) { ... }
+$xl: 1280px;
+// => @media (min-width: 1280px) { ... }
+$xl2: 1536px;
+
+
+.cardSlider{
+  .swiper{
+
+    //@media (min-width: 540px) {
+    //  width: 80vw !important;
+    //  padding: 4px ;
+    //}
+    @media (min-width: $sm) {
+      //padding: 4px 48px !important;
+      padding: 4px calc(48px + calc(calc(100vw - 768px) * 0.5)) !important;
+      //width: calc(calc(48px + calc(calc(100vw - 768px) * 0.5)) + 504) !important;
+
+    }
+    @media (min-width: $md) {
+      padding: 4px 88px !important;
+
+    }
+    @media (min-width: $lg) {
+      //box-sizing: content-box;
+      //width: calc(47.5rem + min(calc(68px + calc(100vw - 1024px)), 92px)) !important;
+      padding: 4px 88px !important;
+
+      //margin: 0 auto !important;
+    }
+    @media (min-width: $xl) {
+      padding: 4px 88px !important;
+    }
+  }
+}
