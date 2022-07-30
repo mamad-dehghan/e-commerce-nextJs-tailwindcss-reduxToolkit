@@ -15,8 +15,8 @@ function Button({
 
     const spanStyles = useMemo(() => {
         return classNames(
-            'flex items-center justify-center py-[7px]  rounded-md ',
-            disable ? 'text-weef-secondary-light bg-secondary' : " transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0 text-weef-white group-hover:text-black ",
+            'flex items-center justify-center py-[7px] rounded',
+            disable ? 'text-weef-secondary-light bg-secondary' : " transition-all ease-in duration-75 bg-black rounded group-hover:bg-opacity-0 text-weef-white group-hover:text-black ",
             size === 'small' ? 'text-base px-[15px] h-[34px]' : '',
             size === 'medium' ? 'text-xl px-[23px] h-[46px]' : '',
             size === 'large' ? 'text-2xl px-[35px] h-[54px]' : '',
@@ -25,8 +25,8 @@ function Button({
 
     const buttonStyles = useMemo(() => {
         return classNames(
-            'inline-block items-center justify-center rounded-md  p-[1px] overflow-hidden rounded-md',
-            disable ? 'bg-weef-secondary-light cursor-default' : " group bg-primary"
+            'inline-block items-center justify-center rounded p-[1px] overflow-hidden rounded',
+            disable ? 'bg-weef-secondary-light cursor-default' : "group bg-primary"
         )
     }, [disable]);
 
