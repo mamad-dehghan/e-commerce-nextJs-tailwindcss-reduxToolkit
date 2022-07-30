@@ -5,18 +5,10 @@ import ProductCard from "../../common/ProductCard";
 import SwiperButton from "../../../utilities/icons/SwiperButton";
 import 'swiper/css/navigation';
 import 'swiper/css';
-
-
-type product = {
-    title: string,
-    price: string,
-    sizes?: string[] | number[] | undefined,
-    colors?: string[] | undefined,
-    image: string | any
-}
+import IProduct from "../../../interfaces/IProduct";
 
 type props = {
-    products: product[]
+    products: IProduct[]
 }
 
 const CardSlider=({products}: props)=> {
@@ -41,23 +33,23 @@ const CardSlider=({products}: props)=> {
                                 slidesPerView:2,
                                 initialSlide:2
                             },
-                            1024:{
-                                slidesPerView:3,
-                                initialSlide:3
+                            1024: {
+                                slidesPerView: 3,
+                                initialSlide: 3
                             },
-                            1280:{
-                                slidesPerView:4,
-                                initialSlide:4
+                            1280: {
+                                slidesPerView: 4,
+                                initialSlide: 4
                             }
                         }}
                     >
-                        {products.map((product, index) => (
-                            <SwiperSlide key={index}>
-                                <ProductCard title={product.title}
-                                             image={product.image}
+                        {products.map(product => (
+                            <SwiperSlide key={product.id}>
+                                <ProductCard title={product.name}
+                                             image={product.main_image}
                                              price={product.price}
-                                             sizes={product.sizes}
-                                             colors={product.colors}/>
+                                             sizes={product.attributes.sizes}
+                                             colors={product.attributes.colors}/>
                             </SwiperSlide>
                         ))}
                         <span className='prev absolute -translate-y-1/2 right-1 top-1/2 z-20 '
