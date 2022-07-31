@@ -55,12 +55,11 @@ const filterReducer = (state: filter, action: action) => {
 
 const SubCategory = ({products, categories, category}: props) => {
     const router = useRouter();
-    const content = useRef<HTMLDivElement>(null);
     const contentRight = useRef<HTMLDivElement>(null);
     const contentLeft = useRef<HTMLDivElement>(null);
     const [height, setHeight] = useState<number>(0);
     const fixHeight = useCallback(() => {
-        content && content.current && contentRight && contentRight.current && contentLeft && contentLeft.current && setHeight(Math.max(content.current.clientHeight, contentLeft.current.clientHeight, contentRight.current.clientHeight,))
+        contentRight && contentRight.current && contentLeft && contentLeft.current && setHeight(Math.max(contentLeft.current.clientHeight, contentRight.current.clientHeight,))
     }, []);
     useLayoutEffect(() => {
         fixHeight();
@@ -99,13 +98,15 @@ const SubCategory = ({products, categories, category}: props) => {
     const productsDetails = useMemo(() => {
         const allBrands: string[] = products.map(item => item.attributes.brand);
         const uniqueBrands = allBrands.filter((item, index) => !allBrands.includes(item, index + 1))
+
         const allColors: any[] = products.map(item => item.attributes.colors)
         const flatAllColors = [].concat.apply([], allColors);
         const uniqueColors = flatAllColors.filter((item, index) => !flatAllColors.includes(item, index + 1)).sort((a, b) => a - b)
+
         const allSizes: any[] = products.map(item => item.attributes.sizes)
         const flatAllSizes = [].concat.apply([], allSizes);
         const uniqueSizes = flatAllSizes.filter((item, index) => !flatAllSizes.includes(item, index + 1)).sort((a, b) => a - b)
-        console.log(uniqueColors)
+
         let maxPrice: number = 0;
         let minPrice: number = Infinity;
         products.forEach(item => {
@@ -148,7 +149,7 @@ const SubCategory = ({products, categories, category}: props) => {
                 <title>{categoryDetails.name}</title>
             </Head>
             <DefaultLayout>
-                <div className='w-full flex flex-row h-full grow' style={{minHeight: height}} ref={content}>
+                <div className='w-full flex flex-row h-full grow'>
                     <div style={{minHeight: height}} ref={contentRight} className='h-full bg-weef-black w-[24rem]'>
                         <div
                             onClick={fixHeight}
@@ -167,9 +168,7 @@ const SubCategory = ({products, categories, category}: props) => {
                                 onChange={handleChangeColors}
                                 position='relative'
                                 options={productsDetails.colors}
-                                initialValues={[
-                                    '#925730',
-                                    '#4390bb']}
+                                initialValues={[]}
                                 title='رنگ بندی'/>
                             <MultiSelect
                                 onChange={handleChangeSizes}
@@ -192,7 +191,7 @@ const SubCategory = ({products, categories, category}: props) => {
                             <div
                                 className='absolute rounded-full bg-weef-black w-[345px] h-[345px] -top-[188px] -left-[92px]'/>
                             {/*<SearchInput placeholder='search'/>*/}
-                            <div className='w-full h-full bg-secondary z-10 rounded'></div>
+                            <div className='w-full h-full bg-secondary z-10 rounded'/>
                         </div>
                         <div
                             className='h-20 bg-weef-black flex flex-row items-center justify-start overflow-x-auto px-16 gap-16'>
