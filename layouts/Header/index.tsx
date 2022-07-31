@@ -6,13 +6,13 @@ import SearchInput from "../../components/common/SearchInput";
 
 function Header() {
     return (
-        <div className='w-full bg-weef-black flex'>
+        <div className='w-full bg-weef-black flex sticky top-0 z-50'>
             <div className='Container grow flex items-center justify-between px-8 py-2'>
                 <div className='flex items-center gap-4'>
                     <Link href='/Basket'>
                         <a><BasketIcon/></a>
                     </Link>
-                    <SearchInput dir='rtl'  placeholder='جست‌وجو بین محصولات ...'/>
+                    <SearchInput dir='rtl' placeholder='جست‌وجو بین محصولات ...'/>
                 </div>
                 <div className='flex flex-row  gap-4'>
                     <Link href='/'><a className='link font-normal'>خانه</a></Link>
