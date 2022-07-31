@@ -1,18 +1,14 @@
-import React, {SelectHTMLAttributes, useMemo, useState} from 'react';
+import React, {SelectHTMLAttributes, useEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
 import Option from "./Option";
-
-type option = {
-    value: string,
-    color: string,
-}
 
 interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
     position: 'absolute' | 'relative',
     initialValues?: string[],
     options: string[],
-    title: string
+    title: string,
+    onChange: any
 }
 
 const ColorMultiSelect = ({title, position, initialValues = [], options = [], onChange}: Interface) => {
@@ -61,6 +57,9 @@ const ColorMultiSelect = ({title, position, initialValues = [], options = [], on
             setValues(newValues)
         }
     }
+    useEffect(() => {
+        onChange(values)
+    }, [values])
 
 
     return (

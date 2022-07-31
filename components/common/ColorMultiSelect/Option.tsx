@@ -34,4 +34,4 @@ const Option = ({option, toggle, initial}: props) => {
     );
 }
 
-export default Option;
+export default React.memo(Option);
