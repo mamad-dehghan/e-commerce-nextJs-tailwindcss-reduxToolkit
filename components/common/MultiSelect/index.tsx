@@ -1,29 +1,28 @@
 import React, {MouseEventHandler, SelectHTMLAttributes, useEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
-import {value} from "dom7";
 import Option from "./Option";
+import {filterEnum} from "../../../pages/Products/[Category]/[SubCategory]";
 
-type option = {
-    value: string,
-    text: string,
-}
+// type option = {
+//     value: string,
+//     text: string,
+// }
 
 interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
     position: 'absolute' | 'relative',
     initialValues?: string[],
-    options: option[],
-    title: string
+    options: string[],
+    title: string,
+    onChange: any,
 }
 
 const MultiSelect = ({title, position, initialValues = [], options = [], onChange}: Interface) => {
     const [open, setOpen] = useState<boolean>(false);
     const [values, setValues] = useState<string[]>(initialValues);
-    const [event, setEvent] = useState<any>();
-    const [list, setList] = useState<boolean[]>(options.map(option => initialValues?.includes(option.value)))
 
     useEffect(() => {
-        setList(values.map(option => values.includes(option)))
+        onChange(values)
     }, [values])
 
     const classSelect = useMemo(() => {
@@ -57,14 +56,6 @@ const MultiSelect = ({title, position, initialValues = [], options = [], onChang
         )
     }, [open])
 
-    console.log(values)
-    console.log(values === [] ? (values.map(item => options?.find(r => r.value === item)?.text).concat(' و ')) : title)
-
-    const selectTitle = useMemo(() => {
-        return values === [] ? values.map(item => options?.find(r => r.value === item)?.text).reduce((a, b) => `${a} و ${b}`) : title
-    }, [options, title, values])
-
-
     const toggle = async (value: string) => {
         const index = values.findIndex(item => item === value);
 
@@ -84,17 +75,17 @@ const MultiSelect = ({title, position, initialValues = [], options = [], onChang
                 className={classContainer}>
                 <span
                     onClick={() => setOpen(open => !open)}
-                    className={Container}>{selectTitle}</span>
+                    className={Container}>{title}</span>
                 <div
                     className={classSelect}>
                     <div
                         className={'bg-weef-black flex flex-col justify-items-stretch w-full transition-all duration-300 gap-0.5 rounded'}>
                         {
                             options.map((option, i) => (
-                                <Option key={option.value}
+                                <Option key={option}
                                         option={option}
                                         toggle={toggle}
-                                        initial={initialValues.includes(option.value)}/>
+                                        initial={initialValues.includes(option)}/>
                             ))
                         }
                     </div>
