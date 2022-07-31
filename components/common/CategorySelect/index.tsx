@@ -1,28 +1,46 @@
 import React, {SelectHTMLAttributes, useEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
-import Option from "./Option";
+import ICategory from "../../../interfaces/ICategory";
+import Link from "next/link";
+import {useRouter} from "next/router";
+
+type option = {
+    name: string,
+    slug: string,
+    parent: ICategory | undefined
+}
 
 interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
     position: 'absolute' | 'relative',
-    initialValues?: string[],
-    options: string[],
-    title: string,
-    onChange: any
+    initialValue?: string,
+    options: option[] | undefined
 }
 
-const ColorMultiSelect = ({title, position, initialValues = [], options = [], onChange}: Interface) => {
+const Select = ({position, initialValue = 'دسته یندی', options, onChange}: Interface) => {
     const [open, setOpen] = useState<boolean>(false);
-    const [values, setValues] = useState<string[]>(initialValues);
+    const [value, setValue] = useState<string>(initialValue);
+    const [event, setEvent] = useState<any>();
+    const router = useRouter();
+
+    useEffect(() => {
+        onChange && event && onChange(event);
+    }, [event, onChange])
 
     const classSelect = useMemo(() => {
         return classNames(
             "transition-all duration-300",
             position === 'absolute' ? (open ? 'flex' : 'hidden') : (open ? 'flex h-fit' : 'flex h-0 overflow-hidden'),
-            position === "absolute" ? 'bg-primary flex-col absolute justify-items-stretch p-[1px] pt-0 w-full translate-x-[1px] rounded-b top-[100%]'
+            position === "absolute" ? 'bg-primary flex-col absolute justify-items-stretch p-[1px] pt-0  w-full translate-x-[1px] rounded-b top-[100%]'
                 : 'relative'
         )
     }, [position, open])
+
+    const classLinks = useMemo(() => {
+        return classNames(
+            'leading-loose whitespace-nowrap hover:bg-weef-black min-w-fit text-xl w-full py-1 px-4 block text-weef-white  no-underline cursor-pointer transition-all duration-300 bg-secondary  last:rounded-b'
+        )
+    }, []);
 
     const classContainer = useMemo(() => {
         return classNames(
@@ -46,22 +64,6 @@ const ColorMultiSelect = ({title, position, initialValues = [], options = [], on
         )
     }, [open])
 
-    const toggle = async (value: string) => {
-        const index = values.findIndex(item => item === value);
-
-        if (index === -1)
-            setValues(prevState => [...prevState, value])
-        else {
-            const newValues = values;
-            newValues.splice(index, 1)
-            setValues(newValues)
-        }
-    }
-    useEffect(() => {
-        onChange(values)
-    }, [values])
-
-
     return (
         <>
             <div
@@ -69,18 +71,22 @@ const ColorMultiSelect = ({title, position, initialValues = [], options = [], on
                 className={classContainer}>
                 <span
                     onClick={() => setOpen(open => !open)}
-                    className={Container}>{title}</span>
+                    className={Container}>{initialValue}</span>
                 <div
                     className={classSelect}>
                     <div
-                        className={'bg-weef-black flex flex-col justify-items-stretch w-full transition-all duration-300 gap-0.5 rounded-b'}>
+                        className={'bg-weef-black flex flex-col justify-items-stretch w-full transition-all duration-300 gap-0.5 rounded'}>
                         {
-                            options.map(option => (
-                                <Option
-                                    option={option}
-                                    toggle={toggle}
-                                    key={option}
-                                    initial={initialValues.includes(option)}/>
+                            options?.map(option => (
+                                <span
+                                    key={option.slug}
+                                    onClick={(e) => {
+                                        setEvent(e)
+                                        setValue(option.slug);
+                                        setOpen(false);
+                                        router.push(`/Products/${option.parent?.slug}/${option.slug}`)
+                                    }}
+                                    className={classLinks}>{option.name}<>{console.log(option)}</></span>
                             ))
                         }
                     </div>
@@ -91,4 +97,4 @@ const ColorMultiSelect = ({title, position, initialValues = [], options = [], on
     );
 }
 
-export default React.memo(ColorMultiSelect);
+export default React.memo(Select);

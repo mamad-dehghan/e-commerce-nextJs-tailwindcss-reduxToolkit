@@ -1,40 +1,65 @@
-import React, {ReactElement, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import classNames from "classnames";
-import {JSXChild, JSXElement} from "@typescript-eslint/types/dist/generated/ast-spec";
+import IProduct from "../../../interfaces/IProduct";
+import ICategory from "../../../interfaces/ICategory";
+import Link from "next/link";
+import CardSlider from "../CardSlider";
+import CardsWrapper from "../CardsWrapper";
 
-type props = {
-    background: 'black' | 'primary',
+type slider = {
     title: string,
-    children: ReactElement
+    products: IProduct[]
+};
+
+type wrapper = {
+    category: ICategory,
+    products: IProduct[]
 }
 
-const Section = ({background, title, children}: props) => {
+type props = {
+    slider?: slider,
+    wrapper?: wrapper
+}
+
+const Section = ({slider, wrapper}: props) => {
     const wrapperClassName = useMemo(() => {
         return classNames(
             'w-full flex flex-col items-stretch justify-start py-8 gap-4',
-            background === 'black' ? 'bg-weef-black' : 'bg-secondary'
+            slider && 'bg-weef-black',
+            wrapper && 'bg-secondary'
         )
-    }, [background]);
+    }, [slider, wrapper]);
 
     const paragraphClassName = useMemo(() => {
         return classNames(
             'w-fit text-weef-white px-[4rem] text-[2rem] font-medium',
-            background === 'black' ? 'bg-weef-black' : 'bg-secondary'
+            slider && 'bg-weef-black',
+            wrapper && 'bg-secondary'
         )
-    }, [background]);
+    }, [slider, wrapper]);
 
     return (
         <div className={wrapperClassName}>
             <div className='relative w-full h-[4.5rem] flex items-center justify-center'>
                 <div className='absolute w-full h-2 bg-primary'/>
-                <div className='max-w-[1440px] w-full z-10 flex justify-start'>
-                    <p className={paragraphClassName}>{title}</p>
+                <div className='max-w-[1440px] w-full z-10 flex justify-start items-center'>
+                    <p className={paragraphClassName}>
+                        {slider && slider.title}
+                        {wrapper &&
+                            <Link
+                                href={`/Products/${wrapper.category.parent?.slug}/${wrapper.category.slug}`}>
+                                <a>{wrapper.category.name}</a>
+                            </Link>}
+                    </p>
                 </div>
             </div>
             <div className='max-w-[1440px] w-full mx-auto'>
-                <>
-                    {children}
-                </>
+                {
+                    slider && <CardSlider products={slider.products}/>
+                }
+                {
+                    wrapper && <CardsWrapper products={wrapper.products}/>
+                }
             </div>
         </div>
     );

@@ -1,13 +1,13 @@
 import React, {useMemo, useState} from 'react';
 import classNames from "classnames";
 
-type option = {
-    value: string,
-    text: string,
-}
+// type option = {
+//     value: string,
+//     text: string,
+// }
 
 type props = {
-    option: option,
+    option: string,
     toggle: Function,
     initial: boolean
 }
@@ -22,14 +22,14 @@ const Option = ({option, toggle, initial}: props) => {
     }, []);
 
     return (
-        <span key={option.value}
+        <span key={option}
               className='last:rounded-b overflow-hidden flex justify-between cursor-pointer transition-all duration-300 items-center bg-secondary h-12 gap-2 px-4 py-2 hover:bg-weef-black'
               onClick={() => {
                   setChecked(prev => !prev)
-                  toggle(option.value)
+                  toggle(option)
               }}>
             <span
-                className={classLinks}>{option.text}</span>
+                className={classLinks}>{option}</span>
             <input className='pointer-events-none'
                    style={{accentColor: '#FF626D'}}
                    type="checkbox"
@@ -39,4 +39,4 @@ const Option = ({option, toggle, initial}: props) => {
     );
 }
 
-export default Option;
+export default React.memo(Option);
