@@ -16,8 +16,8 @@ type props = {
     categories: packageCategoryProducts[]
 }
 
-// @ts-ignore
-const Home: NextPage = ({featured, categories}: props) => {
+
+const Home = ({featured, categories}: props) => {
     return (
         <>
             <Head>
