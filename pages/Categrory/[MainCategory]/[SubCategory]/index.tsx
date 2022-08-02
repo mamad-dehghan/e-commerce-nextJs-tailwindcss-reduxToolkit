@@ -31,21 +31,21 @@ export enum filterEnum {
     price
 }
 
-type action = {
+type actionType = {
     type: filterEnum,
     value: any
 }
 
 
-const filterReducer = (state: filter, action: action) => {
+const filterReducer = (state: filter, action: actionType) => {
     switch (action.type) {
         case filterEnum.brand:
             return {...state, brand: action.value}
         case filterEnum.color:
             return {...state, color: action.value}
         case filterEnum.price:
-            const tempPrice = action.value;
-            return {...state, price: tempPrice}
+            // const tempPrice = action.value;
+            return {...state, price: action.value}
         case filterEnum.size:
             return {...state, size: action.value}
         default:
@@ -67,19 +67,19 @@ const SubCategory = ({products, categories, category}: props) => {
 
     const categoryDetails = useMemo(() => {
         const findCategoryById = (id: any): ICategory | undefined => {
-            return categories.find(category => category.id === id)
+            return categories.find(item => item.id === id)
         }
-        const category: ICategory | undefined = categories.find(category => category.slug === router.query.SubCategory)
-        const a = category?.parent;
-        const b = a?.parent;
-        const levelOneCategories = b?.children?.map(item => {
-            return {
-                name: item.name,
-                slug: item.slug,
-                parent: findCategoryById(item.parent)
-            }
-        })
-        const levelTwoCategories = a?.children?.map(item => {
+        const subCategory: ICategory | undefined = categories.find(item => item.slug === router.query.SubCategory)
+        const mainCategory = subCategory?.parent;
+        // const b = a?.parent;
+        // const levelOneCategories = b?.children?.map(item => {
+        //     return {
+        //         name: item.name,
+        //         slug: item.slug,
+        //         parent: findCategoryById(item.parent)
+        //     }
+        // })
+        const levelTwoCategories = mainCategory?.children?.map(item => {
             return {
                 name: item.name,
                 slug: item.slug,
@@ -87,11 +87,11 @@ const SubCategory = ({products, categories, category}: props) => {
             }
         })
         return {
-            name: category?.name,
-            levelOneCategories,
-            levelOneCurrent: a,
+            name: subCategory?.name,
+            // levelOneCategories,
+            // levelOneCurrent: a,
             levelTwoCategories,
-            levelTwoCurrent: category
+            levelTwoCurrent: subCategory
         }
     }, [category])
 
@@ -178,7 +178,7 @@ const SubCategory = ({products, categories, category}: props) => {
                             <PriceRange
                                 min={productsDetails.minPrice}
                                 max={productsDetails.maxPrice}
-                                initialValue={[110, 160]}
+                                initialValue={[productsDetails.minPrice, productsDetails.maxPrice]}
                                 handleChange={() => {
                                 }}/>
                         </div>
@@ -243,18 +243,18 @@ export default SubCategory;
 
 
 export async function getServerSideProps(input: any) {
-    let fetchCategory: IProduct[] = await axios(`http://localhost:8000/store/product/category/slug/${input.query.SubCategory}`)
-        .then((res: any) => res.data)
+    let categoryProducts: IProduct[] = await axios(`http://localhost:8000/store/product/category/slug/${input.query.SubCategory}`)
+        .then((res: any) => res.data);
 
-    let categories: ICategory[] = await axios(`http://localhost:8000/store/category`)
-        .then((res: any) => res.data)
+    let categories: ICategory[] = await axios('http://localhost:8000/store/category')
+        .then((res: any) => res.data);
 
-    const category = categories.find(category => category.slug === input.query.SubCategory)
+    const category = categories.find(category => category.slug === input.query.SubCategory);
 
     return (
         {
             props: {
-                products: fetchCategory,
+                products: categoryProducts,
                 categories,
                 category
             }
