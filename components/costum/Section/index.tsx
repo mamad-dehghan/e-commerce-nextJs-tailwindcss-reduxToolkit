@@ -47,7 +47,7 @@ const Section = ({slider, wrapper}: props) => {
                         {slider && slider.title}
                         {wrapper &&
                             <Link
-                                href={`/Products/${wrapper.category.parent?.slug}/${wrapper.category.slug}`}>
+                                href={`/Category/${wrapper.category.parent?.slug}/${wrapper.category.slug}`}>
                                 <a>{wrapper.category.name}</a>
                             </Link>}
                     </p>

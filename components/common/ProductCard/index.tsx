@@ -4,16 +4,19 @@ import Button from "../Button";
 import classNames from "classnames";
 import PaletteItem from "./PaletteItem";
 import SizeItem from "./SizeItem";
+import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
+import {useDispatch} from "react-redux";
+import {addProduct} from "../../../redux/slices/Basket";
+import {useRouter} from "next/router";
+import IProduct from "../../../interfaces/IProduct";
 
 type props = {
-    title: string,
-    price: string,
-    sizes?: string[] | number[] | undefined,
-    colors?: string[] | undefined,
-    image: string | any
+    product: IProduct,
 }
 
-const ProductCard = ({title, price, image, sizes, colors}: props) => {
+const ProductCard = ({product}: props) => {
+    const dispatch = useDispatch();
+    const router = useRouter();
     const [hover, setHover] = useState<boolean>(false);
 
     const classNameTop = useMemo(() => {
@@ -44,30 +47,41 @@ const ProductCard = ({title, price, image, sizes, colors}: props) => {
         )
     }, [hover]);
 
+    const handleAddToBasket = (e: any) => {
+        e.stopPropagation();
+        dispatch(addProduct(product));
+    }
 
     return (
-        <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-             className='relative cursor-pointer items-stretch justify-items-stretch w-[15.5rem] h-80 ring-1 ring-primary-red overflow-hidden rounded'>
+        <div
+            onClick={() => router.push(`/Products/${product.id}`)}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            className='relative cursor-pointer items-stretch justify-items-stretch w-[15.5rem] h-80 ring-1 ring-primary-red overflow-hidden rounded'>
             <div className={classNameTop}>
                 <span>سایزهای موجود:</span>
-                {sizes && sizes.map(size => (
+                {product.attributes.sizes && product.attributes.sizes.map(size => (
                     <SizeItem size={size} key={size}/>
                 ))}
             </div>
             <div className='relative h-[12.5rem] w-full flex-shrink-0'>
-                <Image objectFit={'cover'} src={image} layout={'fill'} alt={''}/>
+                <Image objectFit={'cover'} src={product.main_image} layout={'fill'} alt={''}/>
                 <div className={classNameShadow}/>
             </div>
             <div
                 className={classNameDetails}>
                 <div className='flex flex-col py-4 gap-6 px-2'>
-                    <div>{title}</div>
-                    <div>{price} ریال</div>
-                    <div><Button size='small'>افزودن به سبد خرید</Button></div>
+                    <div>{product.name}</div>
+                    <div>{_3DigitSeparator(product.final_price)}<span className='pr-2'>ریال</span></div>
+                    <div>
+                        <Button
+                            onClick={handleAddToBasket}
+                            size='small'>افزودن به سبد خرید</Button>
+                    </div>
                 </div>
                 <div className={classNameColorPalette}>
                     {
-                        colors && colors.map(color => (
+                        product.attributes.colors && product.attributes.colors.map(color => (
                             <PaletteItem color={color} key={color}/>
                         ))
                     }
