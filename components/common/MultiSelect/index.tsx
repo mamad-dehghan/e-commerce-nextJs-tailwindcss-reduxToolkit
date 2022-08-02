@@ -1,13 +1,7 @@
-import React, {MouseEventHandler, SelectHTMLAttributes, useEffect, useMemo, useState} from 'react';
+import React, {SelectHTMLAttributes, useEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
 import Option from "./Option";
-import {filterEnum} from "../../../pages/Categrory/[MainCategory]/[SubCategory]";
-
-// type option = {
-//     value: string,
-//     text: string,
-// }
 
 interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
     position: 'absolute' | 'relative',
