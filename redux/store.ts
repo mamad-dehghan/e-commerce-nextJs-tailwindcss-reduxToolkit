@@ -1,11 +1,9 @@
-import {configureStore} from "@reduxjs/toolkit";
-import Basket from "./slices/Basket";
+import {createStore} from "@reduxjs/toolkit";
+import reducer from "./slices/";
+import {persistStore} from "redux-persist";
 
-export const store = configureStore({
-    reducer: {
-        Basket
-    }
-})
+export const store = createStore(reducer)
+export const persist = persistStore(store)
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

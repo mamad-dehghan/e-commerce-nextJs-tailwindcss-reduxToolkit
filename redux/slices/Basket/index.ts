@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import IProduct from "../../../interfaces/IProduct";
 
-type BasketSlice = {
+export type BasketSlice = {
     products: {
         product: IProduct,
         count: number
@@ -51,7 +51,7 @@ const Basket = createSlice({
                 state.finalSum -= (action.payload.final_price * temp.count);
             }
         },
-        clearBasket: (state) => {
+        clearBasket: () => {
             return initialState;
         }
     }
