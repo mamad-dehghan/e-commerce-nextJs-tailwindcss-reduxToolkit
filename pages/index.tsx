@@ -52,8 +52,6 @@ const Home = ({featured, categories}: props) => {
     )
 }
 
-export default Home
-
 export async function getStaticProps() {
     let fetch: IProduct[] = await axios('http://localhost:8000/store/product/featured?format=json')
         .then((res: any) => res.data)
@@ -77,3 +75,5 @@ export async function getStaticProps() {
     })
 
 }
+
+export default Home;
