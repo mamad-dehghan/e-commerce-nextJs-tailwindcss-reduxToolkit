@@ -45,11 +45,7 @@ const CardSlider=({products}: props)=> {
                     >
                         {products.map(product => (
                             <SwiperSlide key={product.id}>
-                                <ProductCard title={product.name}
-                                             image={product.main_image}
-                                             price={product.price}
-                                             sizes={product.attributes.sizes}
-                                             colors={product.attributes.colors}/>
+                                <ProductCard product={product}/>
                             </SwiperSlide>
                         ))}
                         <span className='prev absolute -translate-y-1/2 right-1 top-1/2 z-20 '

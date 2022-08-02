@@ -12,11 +12,7 @@ function CardsWrapper({products}: props) {
             {
                 products.map(product => (
                     <ProductCard key={product.id}
-                                 title={product.name}
-                                 image={product.main_image}
-                                 price={product.price}
-                                 sizes={product.attributes.sizes}
-                                 colors={product.attributes.colors}/>
+                                 product={product}/>
                 ))
             }
         </div>

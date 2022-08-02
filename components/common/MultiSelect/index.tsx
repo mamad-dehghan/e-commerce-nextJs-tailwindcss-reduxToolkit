@@ -2,7 +2,7 @@ import React, {MouseEventHandler, SelectHTMLAttributes, useEffect, useMemo, useS
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
 import Option from "./Option";
-import {filterEnum} from "../../../pages/Products/[Category]/[SubCategory]";
+import {filterEnum} from "../../../pages/Categrory/[MainCategory]/[SubCategory]";
 
 // type option = {
 //     value: string,
