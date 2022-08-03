@@ -12,10 +12,12 @@ import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
 
 type props = {
     product: IProduct,
-    count: number
+    count: number,
+    size: string | undefined,
+    color: string | undefined
 }
 
-const BasketPageItem = ({product, count}: props) => {
+const BasketPageItem = ({product, count, color = undefined, size = undefined}: props) => {
     const [hover, setHover] = useState<boolean>(false);
     const dispatch = useDispatch()
 
@@ -46,7 +48,11 @@ const BasketPageItem = ({product, count}: props) => {
     }, [count, dispatch, product])
 
     const handleIncrease = useCallback(() => {
-        dispatch(addProduct(product))
+        dispatch(addProduct({
+            product,
+            size: product.attributes.sizes ? product.attributes.sizes[0] : undefined,
+            color: product.attributes.colors ? product.attributes.colors[0] : undefined
+        }));
     }, [dispatch, product])
 
     const handleRemoveAll = useCallback(() => {
@@ -63,8 +69,8 @@ const BasketPageItem = ({product, count}: props) => {
                         <a className='w-fit'><p className='link inline-block text-xl'>{product.name}</p></a>
                     </Link>
                     <div className='flex items-center gap-4'>
-                        <PaletteItem color={'#34657A'}/>
-                        <SizeItem size={'xl'}/>
+                        {color && <PaletteItem color={color}/>}
+                        {size && <SizeItem size={size}/>}
                     </div>
                 </div>
                 <div className='w-2/5 flex items-center justify-between '>

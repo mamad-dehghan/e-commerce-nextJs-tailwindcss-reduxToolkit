@@ -5,10 +5,11 @@ import BreadcrumbSection from "../../components/costum/BreadcrumbSection";
 import IProduct from "../../interfaces/IProduct";
 import BasketPageItem from "../../components/costum/BasketPageItem";
 import BasketSum from "../../components/costum/BasketSum";
+import { singleProductType} from "../../redux/slices/BasketSlice";
 
 
 const Basket = () => {
-    const {finalSum, products} = useSelector((state: any) => state.BasketSlice);
+    const {products} = useSelector((state: any) => state.BasketSlice);
     return (
         <DefaultLayout>
             <div className='w-full flex flex-col'>
@@ -24,11 +25,8 @@ const Basket = () => {
                                     <div>empty</div>
                                 ) :
                                 (
-                                    products.map((item: {
-                                            product: IProduct,
-                                            count: number
-                                        }) => (
-                                            <BasketPageItem product={item.product} count={item.count} key={item.product.id} />
+                                    products.map((item: singleProductType) => (
+                                            <BasketPageItem product={item.product} count={item.count} key={item.product.id} size={item.attribute.size} color={item.attribute.color}/>
                                         )
                                     )
                                 )

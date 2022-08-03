@@ -1,15 +1,31 @@
 import {createSlice} from "@reduxjs/toolkit";
 import IProduct from "../../../interfaces/IProduct";
 
+type attributeType = {
+    color?: string,
+    size?: string
+}
+
+export type addToBasketType = {
+    product: IProduct,
+    color: string | undefined,
+    size: string | undefined
+}
+
+export type singleProductType = {
+    product: IProduct,
+    attribute: attributeType
+    count: number,
+}
+
 export type BasketSlice = {
-    products: {
-        product: IProduct,
-        count: number
-    }[],
+    products: singleProductType[],
+    countSum: number,
     finalSum: number
 }
 const initialState: BasketSlice = {
     products: [],
+    countSum: 0,
     finalSum: 0
 }
 
@@ -19,15 +35,20 @@ const BasketSlice = createSlice({
     reducers: {
         addProduct: (state, action) => {
             console.log('add')
-            const index: number = state.products.findIndex(item => item.product.id === action.payload.id);
+            const index: number = state.products.findIndex(item => item.product.id === action.payload.product.id);
             if (index === -1) {
-                state.products = [...state.products, {product: action.payload, count: 1}]
+                state.products = [...state.products, {
+                    product: action.payload.product,
+                    count: 1,
+                    attribute: {size: action.payload.size, color: action.payload.color}
+                }]
             } else {
                 const temp = state.products[index];
                 temp.count += 1;
                 state.products.splice(index, 1, temp);
             }
-            state.finalSum += parseInt(action.payload.final_price)
+            state.finalSum += parseInt(action.payload.product.final_price);
+            state.countSum += 1;
         },
         removeProduct: (state, action) => {
             console.log('remove')
@@ -36,9 +57,14 @@ const BasketSlice = createSlice({
                 return state;
             } else {
                 const temp = state.products[index];
-                temp.count -= 1;
-                state.products.splice(index, 1, temp);
+                if (temp.count === 1) {
+                    state.products.splice(index, 1);
+                } else {
+                    temp.count -= 1;
+                    state.products.splice(index, 1, temp);
+                }
                 state.finalSum -= parseInt(action.payload.final_price);
+                state.countSum -= 1;
             }
         },
         removeAllSingleProduct: (state, action) => {
@@ -49,6 +75,7 @@ const BasketSlice = createSlice({
                 const temp = state.products[index];
                 state.products.splice(index, 1);
                 state.finalSum -= parseInt(action.payload.final_price) * temp.count;
+                state.countSum -= temp.count;
             }
         },
         clearBasket: () => {

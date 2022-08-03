@@ -6,7 +6,7 @@ import PaletteItem from "./PaletteItem";
 import SizeItem from "./SizeItem";
 import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
 import {useDispatch} from "react-redux";
-import {addProduct} from "../../../redux/slices/BasketSlice";
+import {addProduct, addToBasketType} from "../../../redux/slices/BasketSlice";
 import {useRouter} from "next/router";
 import IProduct from "../../../interfaces/IProduct";
 
@@ -49,7 +49,11 @@ const ProductCard = ({product}: props) => {
 
     const handleAddToBasket = (e: any) => {
         e.stopPropagation();
-        dispatch(addProduct(product));
+        dispatch(addProduct({
+            product,
+            size: product.attributes.sizes ?product.attributes.sizes[0] : undefined,
+            color: product.attributes.colors ?product.attributes.colors[0] : undefined
+        }));
     }
 
     return (

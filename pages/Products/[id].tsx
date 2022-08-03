@@ -21,22 +21,7 @@ type props = {
 
 const SingleProduct = ({product, categories, category, similarProducts}: props) => {
     const dispatch = useDispatch();
-    const {products: basketProducts, final_sum: basketFinalSum} = useSelector((state: any) => state.BasketSlice);
-
-    const handleReduceCount = useCallback(() => {
-        dispatch(removeProduct(product))
-    }, [dispatch, product])
-
-    const handleIncreaseCount = useCallback(() => {
-        dispatch(addProduct(product))
-    }, [dispatch, product])
-
-    // const initialCount = useMemo(() => {
-    //     const index: number = basketProducts.products.findIndex(product);
-    //     return index === -1 ? 0 : basketProducts.products[index].count;
-    // }, [product])
-
-    console.log(basketProducts, basketFinalSum)
+    const {products: basketProducts} = useSelector((state: any) => state.BasketSlice);
 
     const productDetails = useMemo(() => {
         const findCategoryById = (id: any): ICategory | undefined => {
@@ -70,6 +55,28 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
             breadcrumb
         }
     }, [product]);
+
+    const handleReduceCount = useCallback(() => {
+        dispatch(removeProduct(product))
+    }, [dispatch, product])
+
+    const handleIncreaseCount = useCallback(() => {
+        dispatch(addProduct({
+            product,
+            size: productDetails.sizes ? productDetails.sizes[0] : undefined,
+            color: productDetails.colors ? productDetails.colors[0] : undefined
+        }));
+    }, [dispatch, productDetails])
+
+    const initialCount = useMemo(() => {
+        try {
+            const index: number = basketProducts.products.findIndex(product);
+            const count: number = (index === -1) ? 0 : basketProducts.products[index].count;
+            return count;
+        } catch (e) {
+            return 0;
+        }
+    }, [basketProducts.products, product])
 
     return (
         <>
@@ -140,7 +147,7 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                             className='flex float-left min-w-[50%] h-14 items-center justify-start px-4 self-end'>
                                             <MultiButton reduceCount={handleReduceCount}
                                                          increaseCount={handleIncreaseCount}
-                                                         initialCount={0}/>
+                                                         initialCount={initialCount || 0}/>
                                         </div>
                                     </div>
                                     <div className='w-full gap-2 p-2 flex flex-col text-weef-white'>
