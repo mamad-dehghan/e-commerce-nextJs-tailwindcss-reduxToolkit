@@ -27,7 +27,7 @@ const BasketSlice = createSlice({
                 temp.count += 1;
                 state.products.splice(index, 1, temp);
             }
-            state.finalSum += action.payload.final_price
+            state.finalSum += parseInt(action.payload.final_price)
         },
         removeProduct: (state, action) => {
             console.log('remove')
@@ -38,7 +38,7 @@ const BasketSlice = createSlice({
                 const temp = state.products[index];
                 temp.count -= 1;
                 state.products.splice(index, 1, temp);
-                state.finalSum -= action.payload.final_price;
+                state.finalSum -= parseInt(action.payload.final_price);
             }
         },
         removeAllSingleProduct: (state, action) => {
@@ -48,7 +48,7 @@ const BasketSlice = createSlice({
             } else {
                 const temp = state.products[index];
                 state.products.splice(index, 1);
-                state.finalSum -= (action.payload.final_price * temp.count);
+                state.finalSum -= parseInt(action.payload.final_price) * temp.count;
             }
         },
         clearBasket: () => {
