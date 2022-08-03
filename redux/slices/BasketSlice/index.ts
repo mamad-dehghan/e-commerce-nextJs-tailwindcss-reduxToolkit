@@ -80,9 +80,21 @@ const BasketSlice = createSlice({
         },
         clearBasket: () => {
             return initialState;
+        },
+        changeProductColor:(state, action)=>{
+            const index = state.products.findIndex(item=>item.product.id === action.payload.id);
+            if (index === -1)
+                return state;
+            state.products[index].attribute.color = action.payload.color;
+        },
+        changeProductSize:(state, action)=>{
+            const index = state.products.findIndex(item=>item.product.id === action.payload.id);
+            if (index === -1)
+                return state;
+            state.products[index].attribute.size = action.payload.size;
         }
     }
 })
 
 export default BasketSlice.reducer;
-export const {addProduct, removeProduct, removeAllSingleProduct, clearBasket} = BasketSlice.actions;
+export const {addProduct, removeProduct, removeAllSingleProduct, clearBasket, changeProductColor, changeProductSize} = BasketSlice.actions;

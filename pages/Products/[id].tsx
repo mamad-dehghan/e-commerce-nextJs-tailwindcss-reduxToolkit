@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import Head from "next/Head";
 import Image from 'next/image'
 import DefaultLayout from "../../layouts/DefaultLayout";
@@ -10,7 +10,7 @@ import axios from "axios";
 import IProduct from "../../interfaces/IProduct";
 import ICategory from "../../interfaces/ICategory";
 import {useDispatch, useSelector} from "react-redux";
-import {addProduct, removeProduct} from "../../redux/slices/BasketSlice";
+import {addProduct, changeProductColor, changeProductSize, removeProduct} from "../../redux/slices/BasketSlice";
 
 type props = {
     product: IProduct,
@@ -55,6 +55,23 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
             breadcrumb
         }
     }, [product]);
+
+    const [selectedColor, setSelectedColor] = useState<string | undefined>(productDetails.colors ? productDetails.colors[0] : undefined)
+    const [selectedSize, setSelectedSize] = useState<string | number | undefined>(productDetails.sizes ? productDetails.sizes[0] : undefined)
+
+    useEffect(()=>{
+        dispatch(changeProductColor({
+            id:product.id,
+            color:selectedColor
+        }))
+    },[selectedColor])
+
+    useEffect(()=>{
+        dispatch(changeProductSize({
+            id: product.id,
+            size: selectedSize
+        }))
+    },[selectedSize])
 
     const handleReduceCount = useCallback(() => {
         dispatch(removeProduct(product))
@@ -107,6 +124,7 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                                     {
                                                         productDetails.colors.map(color => (
                                                             <div key={color}
+                                                                 onClick={() => setSelectedColor(color)}
                                                                  style={{backgroundColor: color}}
                                                                  className='w-9 h-9 rounded-full hover:border hover:border-primary-red active:border-2 active:border-primary-red cursor-pointer'/>
                                                         ))
@@ -124,6 +142,7 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                                     {
                                                         productDetails.sizes.map(size => (
                                                             <div key={size}
+                                                                 onClick={() => setSelectedSize(size)}
                                                                  className='w-5 h-5 flex items-center justify-center rounded-sm bg-weef-white text-weef-black cursor-pointer hover:border hover:border-primary-red'>
                                                                 {size}
                                                             </div>
