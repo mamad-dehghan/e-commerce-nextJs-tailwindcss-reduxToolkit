@@ -84,7 +84,7 @@ const Select = ({position, initialValue = 'دسته یندی', options, onChange
                                         setEvent(e)
                                         setValue(option.slug);
                                         setOpen(false);
-                                        router.push(`/Products/${option.parent?.slug}/${option.slug}`)
+                                        router.push(`/Category/${option.parent?.slug}/${option.slug}`)
                                     }}
                                     className={classLinks}>{option.name}<>{console.log(option)}</></span>
                             ))
