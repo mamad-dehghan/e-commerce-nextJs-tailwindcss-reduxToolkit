@@ -1,6 +1,6 @@
 import React from 'react';
 import WeefIcon from "../../utilities/icons/Weef";
-import BasketIcon from "../../utilities/icons/Basket";
+import BasketIcon from "../../utilities/icons/BasketIcon";
 import Link from "next/link";
 import SearchInput from "../../components/common/SearchInput";
 
