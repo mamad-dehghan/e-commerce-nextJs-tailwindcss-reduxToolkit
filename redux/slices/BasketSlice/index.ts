@@ -13,7 +13,7 @@ const initialState: BasketSlice = {
     finalSum: 0
 }
 
-const Basket = createSlice({
+const BasketSlice = createSlice({
     name: 'basket/redux',
     initialState,
     reducers: {
@@ -57,5 +57,5 @@ const Basket = createSlice({
     }
 })
 
-export default Basket.reducer;
-export const {addProduct, removeProduct, removeAllSingleProduct, clearBasket} = Basket.actions;
+export default BasketSlice.reducer;
+export const {addProduct, removeProduct, removeAllSingleProduct, clearBasket} = BasketSlice.actions;

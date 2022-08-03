@@ -10,7 +10,7 @@ import axios from "axios";
 import IProduct from "../../interfaces/IProduct";
 import ICategory from "../../interfaces/ICategory";
 import {useDispatch, useSelector} from "react-redux";
-import {addProduct, removeProduct} from "../../redux/slices/Basket";
+import {addProduct, removeProduct} from "../../redux/slices/BasketSlice";
 
 type props = {
     product: IProduct,
@@ -21,7 +21,7 @@ type props = {
 
 const SingleProduct = ({product, categories, category, similarProducts}: props) => {
     const dispatch = useDispatch();
-    const {products: basketProducts, final_sum: basketFinalSum} = useSelector((state: any) => state.Basket);
+    const {products: basketProducts, final_sum: basketFinalSum} = useSelector((state: any) => state.BasketSlice);
 
     const handleReduceCount = useCallback(() => {
         dispatch(removeProduct(product))
