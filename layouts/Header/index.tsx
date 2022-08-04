@@ -1,8 +1,8 @@
 import React from 'react';
 import WeefIcon from "../../utilities/icons/Weef";
-import BasketIcon from "../../utilities/icons/Basket";
 import Link from "next/link";
 import SearchInput from "../../components/common/SearchInput";
+import BasketButton from "../../components/common/BasketButton";
 
 function Header() {
     return (
@@ -10,7 +10,7 @@ function Header() {
             <div className='Container grow flex items-center justify-between px-8 py-2'>
                 <div className='flex items-center gap-4'>
                     <Link href='/Basket'>
-                        <a><BasketIcon/></a>
+                        <a><BasketButton /></a>
                     </Link>
                     <SearchInput dir='rtl' placeholder='جست‌وجو بین محصولات ...'/>
                 </div>

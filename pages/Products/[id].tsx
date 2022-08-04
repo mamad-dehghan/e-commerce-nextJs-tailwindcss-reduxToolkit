@@ -1,5 +1,5 @@
-import React, {useCallback, useMemo} from 'react';
-import Head from "next/Head";
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import Head from "next/head";
 import Image from 'next/image'
 import DefaultLayout from "../../layouts/DefaultLayout";
 import BreadcrumbSection from "../../components/costum/BreadcrumbSection";
@@ -10,7 +10,7 @@ import axios from "axios";
 import IProduct from "../../interfaces/IProduct";
 import ICategory from "../../interfaces/ICategory";
 import {useDispatch, useSelector} from "react-redux";
-import {addProduct, removeProduct} from "../../redux/slices/Basket";
+import {addProduct, changeProductColor, changeProductSize, removeProduct} from "../../redux/slices/BasketSlice";
 
 type props = {
     product: IProduct,
@@ -21,22 +21,7 @@ type props = {
 
 const SingleProduct = ({product, categories, category, similarProducts}: props) => {
     const dispatch = useDispatch();
-    const {products: basketProducts, final_sum: basketFinalSum} = useSelector((state: any) => state.Basket);
-
-    const handleReduceCount = useCallback(() => {
-        dispatch(removeProduct(product))
-    }, [dispatch, product])
-
-    const handleIncreaseCount = useCallback(() => {
-        dispatch(addProduct(product))
-    }, [dispatch, product])
-
-    // const initialCount = useMemo(() => {
-    //     const index: number = basketProducts.products.findIndex(product);
-    //     return index === -1 ? 0 : basketProducts.products[index].count;
-    // }, [product])
-
-    console.log(basketProducts, basketFinalSum)
+    const {products: basketProducts} = useSelector((state: any) => state.BasketSlice);
 
     const productDetails = useMemo(() => {
         const findCategoryById = (id: any): ICategory | undefined => {
@@ -71,6 +56,49 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
         }
     }, [product]);
 
+    const [selectedColor, setSelectedColor] = useState<string | undefined>(productDetails.colors ? productDetails.colors[0] : undefined)
+    const [selectedSize, setSelectedSize] = useState<string | number | undefined>(productDetails.sizes ? productDetails.sizes[0] : undefined)
+
+    useEffect(() => {
+        if (selectedColor !== undefined) {
+            dispatch(changeProductColor({
+                id: product.id,
+                color: selectedColor
+            }))
+        }
+    }, [selectedColor])
+
+    useEffect(() => {
+        if (selectedSize !== undefined) {
+            dispatch(changeProductSize({
+                id: product.id,
+                size: selectedSize
+            }))
+        }
+    }, [selectedSize])
+
+    const handleReduceCount = useCallback(() => {
+        dispatch(removeProduct(product))
+    }, [dispatch, product])
+
+    const handleIncreaseCount = useCallback(() => {
+        dispatch(addProduct({
+            product,
+            size: productDetails.sizes ? productDetails.sizes[0] : undefined,
+            color: productDetails.colors ? productDetails.colors[0] : undefined
+        }));
+    }, [dispatch, productDetails])
+
+    const initialCount = useMemo(() => {
+        try {
+            const index: number = basketProducts.products.findIndex(product);
+            const count: number = (index === -1) ? 0 : basketProducts.products[index].count;
+            return count;
+        } catch (e) {
+            return 0;
+        }
+    }, [basketProducts.products, product])
+
     return (
         <>
             <Head>
@@ -100,6 +128,7 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                                     {
                                                         productDetails.colors.map(color => (
                                                             <div key={color}
+                                                                 onClick={() => setSelectedColor(color)}
                                                                  style={{backgroundColor: color}}
                                                                  className='w-9 h-9 rounded-full hover:border hover:border-primary-red active:border-2 active:border-primary-red cursor-pointer'/>
                                                         ))
@@ -117,6 +146,7 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                                     {
                                                         productDetails.sizes.map(size => (
                                                             <div key={size}
+                                                                 onClick={() => setSelectedSize(size)}
                                                                  className='w-5 h-5 flex items-center justify-center rounded-sm bg-weef-white text-weef-black cursor-pointer hover:border hover:border-primary-red'>
                                                                 {size}
                                                             </div>
@@ -140,7 +170,7 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                             className='flex float-left min-w-[50%] h-14 items-center justify-start px-4 self-end'>
                                             <MultiButton reduceCount={handleReduceCount}
                                                          increaseCount={handleIncreaseCount}
-                                                         initialCount={0}/>
+                                                         initialCount={initialCount || 0}/>
                                         </div>
                                     </div>
                                     <div className='w-full gap-2 p-2 flex flex-col text-weef-white'>
@@ -159,10 +189,11 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                 </div>
                                 <div className='w-fit'>
                                     <div
-                                        className='rounded-full w-[480px] h-[480px] bg-primary p-0.5 overflow-hidden'>
-                                        <Image layout={"responsive"} width='100%' height='100%'
-                                               style={{borderRadius: '50%'}}
+                                        className='rounded-full w-[480px] h-[480px] bg-primary p-0.5 overflow-hidden flex items-center justify-center'>
+                                        <div className='w-full h-full bg-weef-black rounded-full overflow-hidden'>
+                                        <Image objectFit={'cover'} width='478px' height='478px'
                                                src={productDetails.image} alt={productDetails.name}/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 
-const BasketIcon = () => {
-    const [counter, setCounter] = useState(0);
+type props = {
+    isEmpty:boolean
+}
+
+const BasketIcon = ({isEmpty}:props) => {
 
     return (
         <>
@@ -10,7 +13,7 @@ const BasketIcon = () => {
                 <div
                     className='rounded-full flex items-center justify-center w-[48px] h-[48px] bg-weef-black group-hover:bg-primary'>
                     <div className='relative'>
-                        {counter == 0 ?
+                        {isEmpty ?
                             <>
                                 <svg className='absolute z-10 group-hover:-z-10 translate-x-1/2 -translate-y-1/2'
                                      width="32" height="32" viewBox="0 0 48 48"
@@ -66,7 +69,7 @@ const BasketIcon = () => {
                             </>
                             :
                             <>
-                                <svg className='absolute z-10 group-hover:-z-10 -translate-x-1/2 -translate-y-1/2'
+                                <svg className='absolute z-10 group-hover:-z-10 translate-x-1/2 -translate-y-1/2'
                                      width="32" height="32" viewBox="0 0 48 48"
                                      fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -98,7 +101,7 @@ const BasketIcon = () => {
                                     </defs>
                                 </svg>
                                 <svg
-                                    className='absolute -z-10 fill-weef-black  group-hover:z-10 -translate-x-1/2 -translate-y-1/2'
+                                    className='absolute -z-10 fill-weef-black  group-hover:z-10 translate-x-1/2 -translate-y-1/2'
                                     width="32" height="32"
                                     viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
