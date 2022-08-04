@@ -68,7 +68,7 @@ const ProductCard = ({product}: props) => {
                     <SizeItem size={size} key={size}/>
                 ))}
             </div>
-            <div className='relative h-[12.5rem] w-full flex-shrink-0'>
+            <div className='relative h-[12.5rem] w-full flex-shrink-0 overflow-hidden flex items-center justify-center'>
                 <Image objectFit={'cover'} src={product.main_image} layout={'fill'} alt={''}/>
                 <div className={classNameShadow}/>
             </div>

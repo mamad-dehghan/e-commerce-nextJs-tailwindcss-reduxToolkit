@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import Head from "next/Head";
+import Head from "next/head";
 import Image from 'next/image'
 import DefaultLayout from "../../layouts/DefaultLayout";
 import BreadcrumbSection from "../../components/costum/BreadcrumbSection";
@@ -59,19 +59,23 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
     const [selectedColor, setSelectedColor] = useState<string | undefined>(productDetails.colors ? productDetails.colors[0] : undefined)
     const [selectedSize, setSelectedSize] = useState<string | number | undefined>(productDetails.sizes ? productDetails.sizes[0] : undefined)
 
-    useEffect(()=>{
-        dispatch(changeProductColor({
-            id:product.id,
-            color:selectedColor
-        }))
-    },[selectedColor])
+    useEffect(() => {
+        if (selectedColor !== undefined) {
+            dispatch(changeProductColor({
+                id: product.id,
+                color: selectedColor
+            }))
+        }
+    }, [selectedColor])
 
-    useEffect(()=>{
-        dispatch(changeProductSize({
-            id: product.id,
-            size: selectedSize
-        }))
-    },[selectedSize])
+    useEffect(() => {
+        if (selectedSize !== undefined) {
+            dispatch(changeProductSize({
+                id: product.id,
+                size: selectedSize
+            }))
+        }
+    }, [selectedSize])
 
     const handleReduceCount = useCallback(() => {
         dispatch(removeProduct(product))
@@ -185,10 +189,11 @@ const SingleProduct = ({product, categories, category, similarProducts}: props) 
                                 </div>
                                 <div className='w-fit'>
                                     <div
-                                        className='rounded-full w-[480px] h-[480px] bg-primary p-0.5 overflow-hidden'>
-                                        <Image layout={"responsive"} width='100%' height='100%'
-                                               style={{borderRadius: '50%'}}
+                                        className='rounded-full w-[480px] h-[480px] bg-primary p-0.5 overflow-hidden flex items-center justify-center'>
+                                        <div className='w-full h-full bg-weef-black rounded-full overflow-hidden'>
+                                        <Image objectFit={'cover'} width='478px' height='478px'
                                                src={productDetails.image} alt={productDetails.name}/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -92,9 +92,8 @@ const BasketPageItem = ({product, count, color = undefined, size = undefined}: p
             <div className={imageWrapper}>
                 <span
                     className='w-full h-full bg-weef-black flex items-center justify-center overflow-hidden'>
-                    <span className='-rotate-45 text-weef-white group-hover:text-weef-black'>
-                        <Image src={product.main_image} alt={product.name} layout={'fixed'} width='150%'
-                               height='150%'/>
+                    <span className='-rotate-45 text-weef-white group-hover:text-weef-black flex justify-center items-center overflow-visible w-full h-full scale-[1.4]'>
+                        <Image src={product.main_image} alt={product.name} objectFit={'cover'} layout={'fill'} />
                     </span>
                 </span>
             </div>
