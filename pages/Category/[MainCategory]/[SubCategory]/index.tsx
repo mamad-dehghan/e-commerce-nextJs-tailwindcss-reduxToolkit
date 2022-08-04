@@ -126,6 +126,7 @@ const SubCategory = ({products, categories, category}: props) => {
     }, [products])
 
     const [filter, filterDispatch] = useReducer(filterReducer, {brand: [], size: [], color: [], price: [0, 0]})
+    const [sort, setSort] = useState<string>('default');
 
     const handleChangeBrands = useCallback((value: any) => {
         filterDispatch({type: filterEnum.brand, value: [...value]})
@@ -143,12 +144,7 @@ const SubCategory = ({products, categories, category}: props) => {
         filterDispatch({type: filterEnum.price, value: [...value]})
     }, [])
 
-    useLayoutEffect(() => {
-        console.log(filter)
-    }, [filter])
-
     const filterProducts = useMemo(() => {
-        console.log(filter.price)
         const filterProductsBrand: IProduct[] = filter.brand.length === 0 ? products : products.filter((item: IProduct) => filter.brand.includes(item.attributes.brand));
         const filterProductsColor: IProduct[] = filter.color.length === 0 ? filterProductsBrand : filterProductsBrand.filter((item: IProduct) => {
             let contain: boolean = false;
@@ -173,7 +169,30 @@ const SubCategory = ({products, categories, category}: props) => {
         })
         const filterProductsPrice: IProduct[] = filterProductsSize.filter(item => (item.final_price >= filter.price[0] && item.final_price <= filter.price[1]));
         return filterProductsPrice;
-    }, [ products, filter])
+    }, [products, filter])
+
+    const sortProducts = useMemo(() => {
+        let sortProductsTemp = [];
+        console.log('sort', sort)
+        switch (sort) {
+            case 'default':
+                sortProductsTemp = filterProducts.sort((a, b) => Math.random() - 0.5);
+                break;
+            case 'cheap':
+                sortProductsTemp = filterProducts.sort((a, b) => parseInt(a.final_price) - parseInt(b.final_price));
+                break
+            case 'expensive':
+                sortProductsTemp = filterProducts.sort((a, b) => parseInt(b.final_price) - parseInt(a.final_price));
+                break;
+            case 'rating':
+                sortProductsTemp = filterProducts.sort((a, b) => b.attributes.rating - a.attributes.rating);
+                break;
+            default:
+                sortProductsTemp = filterProducts.sort((a, b) => Math.random() - 0.5);
+        }
+        console.log(sortProductsTemp)
+        return sortProductsTemp;
+    }, [filterProducts, sort])
 
 
     return (
@@ -228,12 +247,20 @@ const SubCategory = ({products, categories, category}: props) => {
                         <div
                             className='h-20 bg-weef-black flex flex-row items-center justify-start overflow-x-auto px-16 gap-16'>
                             <span className='text-weef-white'>مرتب سازی بر اساس:</span>
-                            <span className='link'>پرفروش ترین</span>
-                            <span className='link'>ارزان ترین</span>
-                            {/*<span></span>*/}
-                            {/*<span></span>*/}
+                            <a onClick={() => {
+                                setSort('default')
+                            }} className='link'>پرفروش ترین</a>
+                            <a onClick={() => {
+                                setSort('rating')
+                            }} className='link'>بیش ترین امتیاز</a>
+                            <a onClick={() => {
+                                setSort('expensive')
+                            }} className='link'>گران ترین</a>
+                            <a onClick={() => {
+                                setSort('cheap')
+                            }} className='link'>ارزان ترین</a>
                         </div>
-                        <CardsWrapper products={filterProducts}/>
+                        <CardsWrapper products={sortProducts}/>
                         <div
                             className='relative w-full bg-weef-black h-20 flex items-center justify-start px-32 overflow-hidden'>
                             <div
