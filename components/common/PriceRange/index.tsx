@@ -21,7 +21,7 @@ const Index = ({min, max, handleChange, initialValue = undefined}: props) => {
     }, [handleChange, value])
 
     const onValueChange = (values: values) => {
-        setValue(values)
+        setValue(values.sort((a, b) => a - b))
     }
 
     const className = useMemo(() => {

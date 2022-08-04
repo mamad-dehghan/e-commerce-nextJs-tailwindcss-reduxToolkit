@@ -139,9 +139,42 @@ const SubCategory = ({products, categories, category}: props) => {
         filterDispatch({type: filterEnum.size, value: [...value]})
     }, [])
 
+    const handleChangePrice = useCallback((value: any) => {
+        filterDispatch({type: filterEnum.price, value: [...value]})
+    }, [])
+
     useLayoutEffect(() => {
         console.log(filter)
     }, [filter])
+
+    const filterProducts = useMemo(() => {
+        console.log(filter.price)
+        const filterProductsBrand: IProduct[] = filter.brand.length === 0 ? products : products.filter((item: IProduct) => filter.brand.includes(item.attributes.brand));
+        const filterProductsColor: IProduct[] = filter.color.length === 0 ? filterProductsBrand : filterProductsBrand.filter((item: IProduct) => {
+            let contain: boolean = false;
+            for (const colorFilterItem of filter.color) {
+                if (item.attributes.colors?.includes(colorFilterItem)) {
+                    contain = true;
+                    break;
+                }
+            }
+            return contain;
+        });
+        const filterProductsSize: IProduct[] = filter.size.length === 0 ? filterProductsColor : filterProductsColor.filter((item: IProduct) => {
+            let contain: boolean = false;
+            for (const sizeFilterItem of filter.size) {
+                // @ts-ignore
+                if (item.attributes.sizes?.includes(sizeFilterItem)) {
+                    contain = true;
+                    break;
+                }
+            }
+            return contain;
+        })
+        const filterProductsPrice: IProduct[] = filterProductsSize.filter(item => (item.final_price >= filter.price[0] && item.final_price <= filter.price[1]));
+        return filterProductsPrice;
+    }, [ products, filter])
+
 
     return (
         <>
@@ -179,8 +212,7 @@ const SubCategory = ({products, categories, category}: props) => {
                                 min={productsDetails.minPrice}
                                 max={productsDetails.maxPrice}
                                 initialValue={[productsDetails.minPrice, productsDetails.maxPrice]}
-                                handleChange={() => {
-                                }}/>
+                                handleChange={handleChangePrice}/>
                         </div>
                     </div>
                     <div
@@ -201,7 +233,7 @@ const SubCategory = ({products, categories, category}: props) => {
                             {/*<span></span>*/}
                             {/*<span></span>*/}
                         </div>
-                        <CardsWrapper products={products}/>
+                        <CardsWrapper products={filterProducts}/>
                         <div
                             className='relative w-full bg-weef-black h-20 flex items-center justify-start px-32 overflow-hidden'>
                             <div

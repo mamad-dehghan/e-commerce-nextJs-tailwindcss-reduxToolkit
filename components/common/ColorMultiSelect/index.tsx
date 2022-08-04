@@ -14,6 +14,7 @@ interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
 const ColorMultiSelect = ({title, position, initialValues = [], options = [], onChange}: Interface) => {
     const [open, setOpen] = useState<boolean>(false);
     const [values, setValues] = useState<string[]>(initialValues);
+    const [renderComponent, render] = useState<boolean>(false);
 
     const classSelect = useMemo(() => {
         return classNames(
@@ -56,10 +57,12 @@ const ColorMultiSelect = ({title, position, initialValues = [], options = [], on
             newValues.splice(index, 1)
             setValues(newValues)
         }
+        render(pre => !pre);
     }
     useEffect(() => {
-        onChange(values)
-    }, [values])
+        onChange(values);
+        console.log('change')
+    }, [values, renderComponent])
 
 
     return (
