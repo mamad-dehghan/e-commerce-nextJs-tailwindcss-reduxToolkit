@@ -1,4 +1,4 @@
-import React, {useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
 import Head from "next/head";
 import {useRouter} from "next/router";
 import DefaultLayout from "../../../../layouts/DefaultLayout";
@@ -10,6 +10,8 @@ import PriceRange from "../../../../components/common/PriceRange";
 import axios from "axios";
 import IProduct from "../../../../interfaces/IProduct";
 import ICategory from "../../../../interfaces/ICategory";
+
+import style from './style.module.scss'
 
 type props = {
     products: IProduct[],
@@ -55,6 +57,7 @@ const filterReducer = (state: filter, action: actionType) => {
 
 const SubCategory = ({products, categories, category}: props) => {
     const router = useRouter();
+    const searchInput = useRef<HTMLDivElement>(null);
     const contentRight = useRef<HTMLDivElement>(null);
     const contentLeft = useRef<HTMLDivElement>(null);
     const [height, setHeight] = useState<number>(0);
@@ -127,6 +130,7 @@ const SubCategory = ({products, categories, category}: props) => {
 
     const [filter, filterDispatch] = useReducer(filterReducer, {brand: [], size: [], color: [], price: [0, 0]})
     const [sort, setSort] = useState<string>('default');
+    const [page, setPage] = useState<number>(1);
 
     const handleChangeBrands = useCallback((value: any) => {
         filterDispatch({type: filterEnum.brand, value: [...value]})
@@ -194,107 +198,139 @@ const SubCategory = ({products, categories, category}: props) => {
         return sortProductsTemp;
     }, [filterProducts, sort])
 
+    const pageProducts = useMemo(() => {
+        const pageSize: number = 3;
+        const pagesCount: number = sortProducts.length;
+        const maxPage: number = Math.max(1, Math.ceil(pagesCount / pageSize));
+        const minIndex: number = (page - 1) * pageSize;
+        const maxIndex: number = Math.min(sortProducts.length + 1, page * pageSize);
+        const pages: number[] = [];
+
+        for (let i = page - 2; i <= page + 2; i++)
+            if ((i >= 1) && (i <= maxPage))
+                pages.push(i);
+
+        return {
+            totalCount: sortProducts.length,
+            minPage: 1,
+            maxPage,
+            pages,
+            products: sortProducts.slice(minIndex, maxIndex),
+        }
+    }, [sortProducts, page, sort])
+
+    useEffect(() => {
+        searchInput.current && searchInput.current.scrollIntoView({behavior: 'smooth', block: "start"});
+    }, [page])
+
 
     return (
-        <>
-            <Head>
-                <title>{categoryDetails.name}</title>
-            </Head>
-            <DefaultLayout>
-                <div className='w-full flex flex-row h-full grow'>
-                    <div style={{minHeight: height}} ref={contentRight} className='h-full bg-weef-black w-[24rem]'>
-                        <div
-                            onClick={fixHeight}
-                            className='bg-weef-black sticky top-[66px] w-[384px] h-full flex flex-col justify-start px-8 pt-8 pb-16 gap-4'>
-
-                            <CategorySelect
-                                position='relative'
-                                options={categoryDetails.levelTwoCategories}
-                                initialValue={categoryDetails.levelTwoCurrent?.name}/>
-                            <MultiSelect
-                                onChange={handleChangeBrands}
-                                position='relative'
-                                options={productsDetails.brands}
-                                title='برند'/>
-                            <ColorMultiSelect
-                                onChange={handleChangeColors}
-                                position='relative'
-                                options={productsDetails.colors}
-                                initialValues={[]}
-                                title='رنگ بندی'/>
-                            <MultiSelect
-                                onChange={handleChangeSizes}
-                                position='relative'
-                                options={productsDetails.sizes}
-                                title='سایز بندی'/>
-                            <PriceRange
-                                min={productsDetails.minPrice}
-                                max={productsDetails.maxPrice}
-                                initialValue={[productsDetails.minPrice, productsDetails.maxPrice]}
-                                handleChange={handleChangePrice}/>
-                        </div>
-                    </div>
+        <DefaultLayout>
+            <div className='w-full flex flex-row h-full grow'>
+                <Head>
+                    <title>{categoryDetails.name}</title>
+                </Head>
+                <div style={{minHeight: height}} ref={contentRight} className='h-full bg-weef-black w-[24rem]'>
                     <div
-                        ref={contentLeft} style={{minHeight: height}}
-                        className='flex h-full w-full flex-col overflow-x-hidden items-stretch justify-start py-16 gap-4'>
+                        onClick={fixHeight}
+                        className='bg-weef-black sticky top-[66px] w-[384px] h-full flex flex-col justify-start px-8 pt-8 pb-16 gap-4'>
+                        <CategorySelect
+                            position='relative'
+                            options={categoryDetails.levelTwoCategories}
+                            initialValue={categoryDetails.levelTwoCurrent?.name}/>
+                        <MultiSelect
+                            onChange={handleChangeBrands}
+                            position='relative'
+                            options={productsDetails.brands}
+                            title='برند'/>
+                        <ColorMultiSelect
+                            onChange={handleChangeColors}
+                            position='relative'
+                            options={productsDetails.colors}
+                            initialValues={[]}
+                            title='رنگ بندی'/>
+                        <MultiSelect
+                            onChange={handleChangeSizes}
+                            position='relative'
+                            options={productsDetails.sizes}
+                            title='سایز بندی'/>
+                        <PriceRange
+                            min={productsDetails.minPrice}
+                            max={productsDetails.maxPrice}
+                            initialValue={[productsDetails.minPrice, productsDetails.maxPrice]}
+                            handleChange={handleChangePrice}/>
+                    </div>
+                </div>
+                <div
+                    ref={contentLeft} style={{minHeight: height}}
+                    className='flex h-full w-full flex-col overflow-x-hidden items-stretch justify-start py-16 gap-4'>
+                    <div ref={searchInput}
+                         className='relative h-[7.5rem] bg-weef-secondary-light overflow-hidden flex py-8 pl-8 pr-16'>
                         <div
-                            className='relative h-[7.5rem] bg-weef-secondary-light overflow-hidden flex py-8 pl-8 pr-16'>
-                            <div
-                                className='absolute rounded-full bg-weef-black w-[345px] h-[345px] -top-[188px] -left-[92px]'/>
-                            {/*<SearchInput placeholder='search'/>*/}
-                            <div className='w-full h-full bg-secondary z-10 rounded'/>
-                        </div>
-                        <div
-                            className='h-20 bg-weef-black flex flex-row items-center justify-start overflow-x-auto px-16 gap-16'>
-                            <span className='text-weef-white'>مرتب سازی بر اساس:</span>
+                            className='absolute rounded-full bg-weef-black w-[345px] h-[345px] -top-[188px] -left-[92px]'/>
+                        {/*<SearchInput placeholder='search'/>*/}
+                        <div className='w-full h-full bg-secondary z-10 rounded'/>
+                    </div>
+                    <div className='h-20 bg-weef-black flex justify-start '>
+                        <div className={style.filterSection}>
+                                <span
+                                    className='text-weef-white whitespace-nowrap order-first'>مرتب سازی بر اساس:</span>
                             <a onClick={() => {
                                 setSort('default')
-                            }} className='link'>پرفروش ترین</a>
+                            }}
+                               className={`whitespace-nowrap' ${sort === 'default' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                            >پرفروش ترین</a>
                             <a onClick={() => {
                                 setSort('rating')
-                            }} className='link'>بیش ترین امتیاز</a>
+                            }}
+                               className={`whitespace-nowrap' ${sort === 'rating' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                            >بیش ترین امتیاز</a>
                             <a onClick={() => {
                                 setSort('expensive')
-                            }} className='link'>گران ترین</a>
+                            }}
+                               className={`whitespace-nowrap' ${sort === 'expensive' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                            >گران ترین</a>
                             <a onClick={() => {
                                 setSort('cheap')
-                            }} className='link'>ارزان ترین</a>
+                            }}
+                               className={`whitespace-nowrap' ${sort === 'cheap' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                            >ارزان ترین</a>
                         </div>
-                        <CardsWrapper products={sortProducts}/>
+                    </div>
+                    <CardsWrapper products={pageProducts.products}/>
+                    <div
+                        className='relative w-full bg-weef-black h-20 flex items-center justify-start px-32 overflow-hidden'>
                         <div
-                            className='relative w-full bg-weef-black h-20 flex items-center justify-start px-32 overflow-hidden'>
-                            <div
-                                className='absolute w-[345px] h-[345px] -left-[47px] -top-[74px] bg-weef-secondary-light rounded-full'/>
-                            <div dir='ltr'
-                                 className='bg-primary flex items-center justify-start gap-[1px] p-[1px] rounded z-10'>
-                                <button
-                                    className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary rounded-l'>First
-                                </button>
-                                <button
-                                    className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary '>3
-                                </button>
-                                <button
-                                    className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary '>4
-                                </button>
-                                <button
-                                    className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary '
-                                    disabled={true}>5
-                                </button>
-                                <button
-                                    className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary '>6
-                                </button>
-                                <button
-                                    className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary '>7
-                                </button>
-                                <button
-                                    className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary rounded-r'>Last
-                                </button>
-                            </div>
+                            className='absolute w-[345px] h-[345px] -left-[47px] -top-[74px] bg-weef-secondary-light rounded-full'/>
+                        <div
+                            className='bg-primary flex items-center justify-start gap-[1px] p-[1px] rounded z-10'>
+                            <button
+                                key='first'
+                                disabled={page === pageProducts.minPage}
+                                onClick={() => setPage(pageProducts.minPage)}
+                                className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary rounded-r'>ابتدا
+                            </button>
+                            {
+                                pageProducts.pages.map(item => (
+                                    <button
+                                        key={item}
+                                        disabled={page === item}
+                                        onClick={() => setPage(item)}
+                                        className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary'>{item}
+                                    </button>
+                                ))
+                            }
+                            <button
+                                key='last'
+                                disabled={page === pageProducts.maxPage}
+                                onClick={() => setPage(pageProducts.maxPage)}
+                                className='flex items-center justify-center h-12 w-[3.5rem] bg-weef-black hover:bg-transparent text-weef-white hover:text-weef-black transition-all duration-300 disabled:text-weef-grey disabled:bg-secondary disabled:hover:text-weef-grey disabled:hover:bg-secondary rounded-l'>انتها
+                            </button>
                         </div>
                     </div>
                 </div>
-            </DefaultLayout>
-        </>
+            </div>
+        </DefaultLayout>
     );
 }
 

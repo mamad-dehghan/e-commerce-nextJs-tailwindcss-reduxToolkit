@@ -1,0 +1,28 @@
+.filterSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 4rem;
+  gap: 4rem;
+  height: 100%;
+  background-color: inherit;
+  position: relative;
+
+  &::-webkit-scrollbar-track {
+    height: 6px;
+    background-color: inherit;
+  }
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    height: 6px;
+    border-radius: 10px;
+    background: #4C4C4C;
+  }
+}
