@@ -27,6 +27,16 @@ module.exports = {
         'weef-white':'#FAFAFA',
         'weef-secondary-light':'#4C4C4C',
         'weef-grey':'#C2C2C2'
+      },
+      animation: {
+        'shake' :'wiggle 200ms cubic-bezier(0, 0, 0.2, 1)'
+      },
+      keyframes: {
+        wiggle: {
+          '25%, 75%': { transform: 'rotate(-30deg)' },
+          '50%': { transform: 'rotate(30deg)' },
+        }
+
       }
     },
   },
