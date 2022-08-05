@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import ProductCard from "../../common/ProductCard";
 import IProduct from "../../../interfaces/IProduct";
 
@@ -19,4 +19,4 @@ function CardsWrapper({products}: props) {
     );
 }
 
-export default React.memo(CardsWrapper);
+export default CardsWrapper;

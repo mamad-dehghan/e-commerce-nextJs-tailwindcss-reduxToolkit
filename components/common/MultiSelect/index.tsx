@@ -14,10 +14,11 @@ interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
 const MultiSelect = ({title, position, initialValues = [], options = [], onChange}: Interface) => {
     const [open, setOpen] = useState<boolean>(false);
     const [values, setValues] = useState<string[]>(initialValues);
+    const [renderComponent, render] = useState<boolean>(false)
 
     useEffect(() => {
         onChange(values)
-    }, [values])
+    }, [renderComponent, values])
 
     const classSelect = useMemo(() => {
         return classNames(
@@ -50,16 +51,17 @@ const MultiSelect = ({title, position, initialValues = [], options = [], onChang
         )
     }, [open])
 
-    const toggle = async (value: string) => {
+    const toggle = (value: string) => {
         const index = values.findIndex(item => item === value);
 
-        if (index === -1)
-            setValues(prevState => [...prevState, value])
-        else {
+        if (index === -1) {
+            setValues(prevState => [...prevState, value]);
+        } else {
             const newValues = values;
-            newValues.splice(index, 1)
-            setValues(newValues)
+            newValues.splice(index, 1);
+            setValues(newValues);
         }
+        render(pre => !pre);
     }
 
     return (
