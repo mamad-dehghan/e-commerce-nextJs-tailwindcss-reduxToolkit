@@ -1,6 +1,5 @@
-import React, {useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react';
 import Head from "next/head";
-import {useRouter} from "next/router";
 import DefaultLayout from "../../../../layouts/DefaultLayout";
 import CategorySelect from "../../../../components/common/CategorySelect";
 import MultiSelect from "../../../../components/common/MultiSelect";
@@ -13,10 +12,28 @@ import ICategory from "../../../../interfaces/ICategory";
 
 import style from './style.module.scss'
 
+type productDetailsType = {
+    brands: string[],
+    colors: string[],
+    sizes: string [],
+    minPrice: number,
+    maxPrice: number
+}
+
+type categoryDetailsType = {
+    name: string,
+    siblingCategories: {
+        name: string,
+        slug: string,
+        parent: ICategory | undefined
+    }[],
+    currentCategory: ICategory
+}
+
 type props = {
     products: IProduct[],
-    categories: ICategory[],
-    category: ICategory
+    productsDetails: productDetailsType,
+    categoryDetails: categoryDetailsType
 }
 
 type filter = {
@@ -38,7 +55,6 @@ type actionType = {
     value: any
 }
 
-
 const filterReducer = (state: filter, action: actionType) => {
     switch (action.type) {
         case filterEnum.brand:
@@ -55,8 +71,7 @@ const filterReducer = (state: filter, action: actionType) => {
     }
 }
 
-const SubCategory = ({products, categories, category}: props) => {
-    const router = useRouter();
+const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
     const searchInput = useRef<HTMLDivElement>(null);
     const contentRight = useRef<HTMLDivElement>(null);
     const contentLeft = useRef<HTMLDivElement>(null);
@@ -64,69 +79,6 @@ const SubCategory = ({products, categories, category}: props) => {
     const fixHeight = useCallback(() => {
         contentRight && contentRight.current && contentLeft && contentLeft.current && setHeight(Math.max(contentLeft.current.clientHeight, contentRight.current.clientHeight,))
     }, []);
-    useLayoutEffect(() => {
-        fixHeight();
-    }, [contentLeft, contentRight]);
-
-    const categoryDetails = useMemo(() => {
-        const findCategoryById = (id: any): ICategory | undefined => {
-            return categories.find(item => item.id === id)
-        }
-        const subCategory: ICategory | undefined = categories.find(item => item.slug === router.query.SubCategory)
-        const mainCategory = subCategory?.parent;
-        // const b = a?.parent;
-        // const levelOneCategories = b?.children?.map(item => {
-        //     return {
-        //         name: item.name,
-        //         slug: item.slug,
-        //         parent: findCategoryById(item.parent)
-        //     }
-        // })
-        const levelTwoCategories = mainCategory?.children?.map(item => {
-            return {
-                name: item.name,
-                slug: item.slug,
-                parent: findCategoryById(item.parent)
-            }
-        })
-        return {
-            name: subCategory?.name,
-            // levelOneCategories,
-            // levelOneCurrent: a,
-            levelTwoCategories,
-            levelTwoCurrent: subCategory
-        }
-    }, [category])
-
-    const productsDetails = useMemo(() => {
-        const allBrands: string[] = products.map(item => item.attributes.brand);
-        const uniqueBrands = allBrands.filter((item, index) => !allBrands.includes(item, index + 1))
-
-        const allColors: any[] = products.map(item => item.attributes.colors)
-        const flatAllColors = [].concat.apply([], allColors);
-        const uniqueColors = flatAllColors.filter((item, index) => !flatAllColors.includes(item, index + 1)).sort((a, b) => a - b)
-
-        const allSizes: any[] = products.map(item => item.attributes.sizes)
-        const flatAllSizes = [].concat.apply([], allSizes);
-        const uniqueSizes = flatAllSizes.filter((item, index) => !flatAllSizes.includes(item, index + 1)).sort((a, b) => a - b)
-
-        let maxPrice: number = 0;
-        let minPrice: number = Infinity;
-        products.forEach(item => {
-            const price = parseInt(item.price);
-            if (price > maxPrice)
-                maxPrice = price;
-            if (price < minPrice)
-                minPrice = price
-        })
-        return {
-            brands: uniqueBrands,
-            colors: uniqueColors,
-            sizes: uniqueSizes,
-            minPrice,
-            maxPrice
-        }
-    }, [products])
 
     const [filter, filterDispatch] = useReducer(filterReducer, {brand: [], size: [], color: [], price: [0, 0]})
     const [sort, setSort] = useState<string>('default');
@@ -176,11 +128,11 @@ const SubCategory = ({products, categories, category}: props) => {
     }, [products, filter])
 
     const sortProducts = useMemo(() => {
-        let sortProductsTemp = [];
+        let sortProductsTemp;
         console.log('sort', sort)
         switch (sort) {
             case 'default':
-                sortProductsTemp = filterProducts.sort((a, b) => Math.random() - 0.5);
+                sortProductsTemp = filterProducts.sort(() => Math.random() - 0.5);
                 break;
             case 'cheap':
                 sortProductsTemp = filterProducts.sort((a, b) => parseInt(a.final_price) - parseInt(b.final_price));
@@ -192,7 +144,7 @@ const SubCategory = ({products, categories, category}: props) => {
                 sortProductsTemp = filterProducts.sort((a, b) => b.attributes.rating - a.attributes.rating);
                 break;
             default:
-                sortProductsTemp = filterProducts.sort((a, b) => Math.random() - 0.5);
+                sortProductsTemp = filterProducts.sort(() => Math.random() - 0.5);
         }
         console.log(sortProductsTemp)
         return sortProductsTemp;
@@ -223,6 +175,9 @@ const SubCategory = ({products, categories, category}: props) => {
         searchInput.current && searchInput.current.scrollIntoView({behavior: 'smooth', block: "start"});
     }, [page])
 
+    useEffect(() => {
+        fixHeight();
+    }, [contentLeft, contentRight, pageProducts]);
 
     return (
         <DefaultLayout>
@@ -236,8 +191,8 @@ const SubCategory = ({products, categories, category}: props) => {
                         className='bg-weef-black sticky top-[66px] w-[384px] h-full flex flex-col justify-start px-8 pt-8 pb-16 gap-4'>
                         <CategorySelect
                             position='relative'
-                            options={categoryDetails.levelTwoCategories}
-                            initialValue={categoryDetails.levelTwoCurrent?.name}/>
+                            options={categoryDetails.siblingCategories}
+                            initialValue={categoryDetails.currentCategory?.name}/>
                         <MultiSelect
                             onChange={handleChangeBrands}
                             position='relative'
@@ -336,7 +291,6 @@ const SubCategory = ({products, categories, category}: props) => {
 
 export default SubCategory;
 
-
 export async function getServerSideProps(input: any) {
     let categoryProducts: IProduct[] = await axios(`http://localhost:8000/store/product/category/slug/${input.query.SubCategory}`)
         .then((res: any) => res.data);
@@ -344,14 +298,62 @@ export async function getServerSideProps(input: any) {
     let categories: ICategory[] = await axios('http://localhost:8000/store/category')
         .then((res: any) => res.data);
 
-    const category = categories.find(category => category.slug === input.query.SubCategory);
+    const productsDetails = (products: IProduct[]): productDetailsType => {
+        const allBrands: string[] = products.map(item => item.attributes.brand);
+        const uniqueBrands = allBrands.filter((item, index) => !allBrands.includes(item, index + 1))
+
+        const allColors: any[] = products.map(item => item.attributes.colors)
+        const flatAllColors = [].concat.apply([], allColors);
+        const uniqueColors = flatAllColors.filter((item, index) => !flatAllColors.includes(item, index + 1)).sort((a, b) => a - b)
+
+        const allSizes: any[] = products.map(item => item.attributes.sizes)
+        const flatAllSizes = [].concat.apply([], allSizes);
+        const uniqueSizes = flatAllSizes.filter((item, index) => !flatAllSizes.includes(item, index + 1)).sort((a, b) => a - b)
+
+        let maxPrice: number = 0;
+        let minPrice: number = Infinity;
+        products.forEach(item => {
+            const price = parseInt(item.price);
+            if (price > maxPrice)
+                maxPrice = price;
+            if (price < minPrice)
+                minPrice = price
+        })
+        return {
+            brands: uniqueBrands,
+            colors: uniqueColors,
+            sizes: uniqueSizes,
+            minPrice,
+            maxPrice
+        }
+    }
+
+    const categoryDetails = () => {
+        const findCategoryById = (id: any): ICategory | undefined => {
+            return categories.find(item => item.id === id)
+        }
+        const subCategory: ICategory | undefined = categories.find(item => item.slug === input.query.SubCategory)
+        const mainCategory = subCategory?.parent;
+        const siblingCategories = mainCategory?.children?.map(item => {
+            return {
+                name: item.name,
+                slug: item.slug,
+                parent: findCategoryById(item.parent)
+            }
+        })
+        return {
+            name: subCategory?.name,
+            siblingCategories,
+            currentCategory: subCategory
+        }
+    }
 
     return (
         {
             props: {
                 products: categoryProducts,
-                categories,
-                category
+                categoryDetails: categoryDetails(),
+                productsDetails: productsDetails(categoryProducts)
             }
         }
     )
