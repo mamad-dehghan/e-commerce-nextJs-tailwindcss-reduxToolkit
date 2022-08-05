@@ -1,14 +1,26 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../redux/store";
 
 type props = {
-    initialCount: number,
     reduceCount: Function,
-    increaseCount: Function
+    increaseCount: Function,
+    id: number
 }
 
-const MultiButton = ({initialCount, increaseCount, reduceCount}: props) => {
-    const [count, setCount] = useState<number>(initialCount);
+const MultiButton = ({increaseCount, reduceCount, id}: props) => {
+    const {products} = useSelector((state: RootState) => state.BasketSlice);
+    const [count, setCount] = useState<number>(0);
+
+    useLayoutEffect(() => {
+        const index = products.findIndex((item) => (item.product.id === id));
+        if (index === -1) {
+            setCount(0);
+        } else {
+            setCount(products[index].count);
+        }
+    }, [id, products])
 
     const handleReduce = useCallback(() => {
         if (count > 0) {
@@ -54,4 +66,4 @@ const MultiButton = ({initialCount, increaseCount, reduceCount}: props) => {
     );
 }
 
-export default MultiButton;
+export default React.memo(MultiButton);

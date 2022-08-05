@@ -74,7 +74,7 @@ const BasketPageItem = ({product, count, color = undefined, size = undefined}: p
                     </div>
                 </div>
                 <div className='w-2/5 flex items-center justify-between '>
-                    <MultiButton initialCount={count} reduceCount={handleReduce}
+                    <MultiButton id={product.id} reduceCount={handleReduce}
                                  increaseCount={handleIncrease}/>
                     <span
                         className='text-weef-white '><span>{_3DigitSeparator(product.final_price)}</span><span
