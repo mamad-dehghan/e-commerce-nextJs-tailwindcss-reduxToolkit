@@ -81,7 +81,7 @@ body,
         @apply bg-gradient-to-r from-primary-red to-primary-orange;
     }
     .link{
-        @apply text-transparent bg-clip-text bg-weef-white cursor-pointer hover:bg-primary active:bg-primary ;
+        @apply text-weef-white hover:text-transparent hover:bg-clip-text cursor-pointer hover:bg-primary active:bg-primary ;
     }
     .Container{
         @apply md:px-2 xl:px-2 max-w-[1440px] mx-auto w-full ;
