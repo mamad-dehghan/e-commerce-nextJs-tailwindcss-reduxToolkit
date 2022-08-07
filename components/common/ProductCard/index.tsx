@@ -6,9 +6,10 @@ import PaletteItem from "./PaletteItem";
 import SizeItem from "./SizeItem";
 import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
 import {useDispatch} from "react-redux";
-import {addProduct, addToBasketType} from "../../../redux/slices/BasketSlice";
+import {addProduct} from "../../../redux/slices/BasketSlice";
 import {useRouter} from "next/router";
 import IProduct from "../../../interfaces/IProduct";
+import style from './style.module.scss'
 
 type props = {
     product: IProduct,
@@ -21,7 +22,7 @@ const ProductCard = ({product}: props) => {
 
     const classNameTop = useMemo(() => {
         return classNames(
-            'absolute w-full bg-weef-black text-weef-white flex flex-row items-center p-4 h-9 gap-2 rounded-t top-0 left-0 transition-all duration-300 z-10',
+            'absolute w-full bg-weef-black text-weef-white flex flex-row items-center justify-between px-2 h-9 gap-2 rounded-t top-0 left-0 transition-all duration-300 z-10',
             hover ? 'translate-y-0' : '-translate-y-full'
         )
     }, [hover]);
@@ -51,8 +52,8 @@ const ProductCard = ({product}: props) => {
         e.stopPropagation();
         dispatch(addProduct({
             product,
-            size: product.attributes.sizes ?product.attributes.sizes[0] : undefined,
-            color: product.attributes.colors ?product.attributes.colors[0] : undefined
+            size: product.attributes.sizes ? product.attributes.sizes[0] : undefined,
+            color: product.attributes.colors ? product.attributes.colors[0] : undefined
         }));
     }
 
@@ -62,12 +63,19 @@ const ProductCard = ({product}: props) => {
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             className='relative cursor-pointer items-stretch justify-items-stretch w-[15.5rem] h-80 ring-1 ring-primary-red overflow-hidden rounded'>
-            <div className={classNameTop}>
-                <span>سایزهای موجود:</span>
-                {product.attributes.sizes && product.attributes.sizes.map(size => (
-                    <SizeItem size={size} key={size}/>
-                ))}
-            </div>
+            {
+                product.attributes.sizes &&
+                <div className={classNameTop}>
+                    <span className='whitespace-nowrap'>سایزهای موجود:</span>
+                    <div className={style.scrollHidden}>
+                        <div className='flex gap-2 items-center overflow-x-auto px-0.5'>
+                            {product.attributes.sizes.map(size => (
+                                <SizeItem size={size} key={size}/>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            }
             <div className='relative h-[12.5rem] w-full flex-shrink-0 overflow-hidden flex items-center justify-center'>
                 <Image objectFit={'cover'} src={product.main_image} layout={'fill'} alt={''}/>
                 <div className={classNameShadow}/>

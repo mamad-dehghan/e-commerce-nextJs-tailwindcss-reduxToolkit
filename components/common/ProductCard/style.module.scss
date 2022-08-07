@@ -1,0 +1,13 @@
+.scrollHidden{
+  max-width:fit-content;
+  flex-grow:1;
+  overflow-x: auto;
+
+  ::-webkit-scrollbar{
+    display: none;
+  }
+
+  ::-moz-viewport-scroll{
+    display: none;
+  }
+}
