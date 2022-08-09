@@ -11,6 +11,8 @@ import IProduct from "../../../../interfaces/IProduct";
 import ICategory from "../../../../interfaces/ICategory";
 
 import style from './style.module.scss'
+import SearchInput from '../../../../components/common/SearchInput';
+import {useRouter} from "next/router";
 
 type productDetailsType = {
     brands: string[],
@@ -62,7 +64,6 @@ const filterReducer = (state: filter, action: actionType) => {
         case filterEnum.color:
             return {...state, color: action.value}
         case filterEnum.price:
-            // const tempPrice = action.value;
             return {...state, price: action.value}
         case filterEnum.size:
             return {...state, size: action.value}
@@ -72,6 +73,7 @@ const filterReducer = (state: filter, action: actionType) => {
 }
 
 const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
+    const router = useRouter();
     const searchInput = useRef<HTMLDivElement>(null);
     const contentRight = useRef<HTMLDivElement>(null);
     const contentLeft = useRef<HTMLDivElement>(null);
@@ -83,6 +85,30 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
     const [filter, filterDispatch] = useReducer(filterReducer, {brand: [], size: [], color: [], price: [0, 0]})
     const [sort, setSort] = useState<string>('default');
     const [page, setPage] = useState<number>(1);
+    // @ts-ignore
+    const [searchValue, setSearchValue] = useState<string>(router.query.search || '');
+
+    const handleSearch = useCallback(async (e: string) => {
+        if (e.length === 0) {
+            if (searchValue.length < 3)
+                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}`, undefined, {shallow: true});
+            else {
+                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}`, undefined, {shallow: false});
+                setPage(1);
+            }
+        } else if (e.length < 3) {
+            if (searchValue.length < 3)
+                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: true});
+            else {
+                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: false});
+                setPage(1);
+            }
+        } else {
+            await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: false});
+            setPage(1);
+        }
+        setSearchValue(e)
+    }, [router, searchValue])
 
     const handleChangeBrands = useCallback((value: any) => {
         filterDispatch({type: filterEnum.brand, value: [...value]})
@@ -125,11 +151,10 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
         })
         const filterProductsPrice: IProduct[] = filterProductsSize.filter(item => (item.final_price >= filter.price[0] && item.final_price <= filter.price[1]));
         return filterProductsPrice;
-    }, [products, filter])
+    }, [products, filter]);
 
     const sortProducts = useMemo(() => {
         let sortProductsTemp;
-        console.log('sort', sort)
         switch (sort) {
             case 'default':
                 sortProductsTemp = filterProducts.sort(() => Math.random() - 0.5);
@@ -146,9 +171,8 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
             default:
                 sortProductsTemp = filterProducts.sort(() => Math.random() - 0.5);
         }
-        console.log(sortProductsTemp)
         return sortProductsTemp;
-    }, [filterProducts, sort])
+    }, [filterProducts, sort]);
 
     const pageProducts = useMemo(() => {
         const pageSize: number = 3;
@@ -169,11 +193,15 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
             pages,
             products: sortProducts.slice(minIndex, maxIndex),
         }
-    }, [sortProducts, page, sort])
+    }, [sortProducts, page, sort]);
 
     useEffect(() => {
-        searchInput.current && searchInput.current.scrollIntoView({behavior: 'smooth', block: "start"});
-    }, [page])
+        setPage(1)
+    }, [filter]);
+
+    useEffect(() => {
+        searchInput.current && searchInput.current.scrollIntoView();
+    }, [page]);
 
     useEffect(() => {
         fixHeight();
@@ -185,7 +213,7 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
                 <Head>
                     <title>{categoryDetails.name}</title>
                 </Head>
-                <div style={{minHeight: height}} ref={contentRight} className='h-full bg-weef-black w-[24rem]'>
+                <div style={{minHeight: height, willChange:'height'}} ref={contentRight} className='h-full bg-weef-black w-[24rem]'>
                     <div
                         onClick={fixHeight}
                         className='bg-weef-black sticky top-[66px] w-[384px] h-full flex flex-col justify-start px-8 pt-8 pb-16 gap-4'>
@@ -223,32 +251,32 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
                          className='relative h-[7.5rem] bg-weef-secondary-light overflow-hidden flex py-8 pl-8 pr-16'>
                         <div
                             className='absolute rounded-full bg-weef-black w-[345px] h-[345px] -top-[188px] -left-[92px]'/>
-                        {/*<SearchInput placeholder='search'/>*/}
-                        <div className='w-full h-full bg-secondary z-10 rounded'/>
+                        <SearchInput itemType='search' initial={searchValue} onChange={handleSearch}
+                                     placeholder='جست‌و‌جو در دسته بندی'/>
                     </div>
-                    <div className='h-20 bg-weef-black flex justify-start '>
+                    <div className='h-20 bg-weef-black'>
                         <div className={style.filterSection}>
                                 <span
                                     className='text-weef-white whitespace-nowrap order-first'>مرتب سازی بر اساس:</span>
                             <a onClick={() => {
                                 setSort('default')
                             }}
-                               className={`whitespace-nowrap' ${sort === 'default' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === 'default' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >پرفروش ترین</a>
                             <a onClick={() => {
                                 setSort('rating')
                             }}
-                               className={`whitespace-nowrap' ${sort === 'rating' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === 'rating' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >بیش ترین امتیاز</a>
                             <a onClick={() => {
                                 setSort('expensive')
                             }}
-                               className={`whitespace-nowrap' ${sort === 'expensive' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === 'expensive' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >گران ترین</a>
                             <a onClick={() => {
                                 setSort('cheap')
                             }}
-                               className={`whitespace-nowrap' ${sort === 'cheap' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === 'cheap' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >ارزان ترین</a>
                         </div>
                     </div>
@@ -289,14 +317,37 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
     );
 }
 
-export default SubCategory;
-
 export async function getServerSideProps(input: any) {
-    let categoryProducts: IProduct[] = await axios(`http://localhost:8000/store/product/category/slug/${input.query.SubCategory}`)
+    const categories: ICategory[] = await axios('http://localhost:8000/store/category')
         .then((res: any) => res.data);
 
-    let categories: ICategory[] = await axios('http://localhost:8000/store/category')
+    const categoryDetails = () => {
+        const findCategoryById = (id: any): ICategory | undefined => {
+            return categories.find(item => item.id === id)
+        }
+        const subCategory: ICategory | undefined = categories.find(item => item.slug === input.query.SubCategory)
+        const mainCategory = subCategory?.parent;
+        const siblingCategories = mainCategory?.children?.map(item => {
+            return {
+                name: item.name,
+                slug: item.slug,
+                parent: findCategoryById(item.parent)
+            }
+        })
+        return {
+            name: subCategory?.name,
+            siblingCategories,
+            currentCategory: subCategory
+        }
+    }
+
+    const categoryProducts: IProduct[] = await axios(`http://localhost:8000/store/product/category/slug/${input.query.SubCategory}`)
         .then((res: any) => res.data);
+
+    const searchProducts: IProduct[] = await axios(`http://localhost:8000/store/product/search/?search=${input.query.search}`)
+        .then((res: any) => res.data);
+
+    const searchProductsCategory: IProduct[] = searchProducts.filter(item=>item.category === categoryDetails().currentCategory?.id);
 
     const productsDetails = (products: IProduct[]): productDetailsType => {
         const allBrands: string[] = products.map(item => item.attributes.brand);
@@ -327,34 +378,17 @@ export async function getServerSideProps(input: any) {
             maxPrice
         }
     }
-
-    const categoryDetails = () => {
-        const findCategoryById = (id: any): ICategory | undefined => {
-            return categories.find(item => item.id === id)
-        }
-        const subCategory: ICategory | undefined = categories.find(item => item.slug === input.query.SubCategory)
-        const mainCategory = subCategory?.parent;
-        const siblingCategories = mainCategory?.children?.map(item => {
-            return {
-                name: item.name,
-                slug: item.slug,
-                parent: findCategoryById(item.parent)
-            }
-        })
-        return {
-            name: subCategory?.name,
-            siblingCategories,
-            currentCategory: subCategory
-        }
-    }
+    const searchIsAvailable = input.query.search ? input.query.search.length > 2 : false;
 
     return (
         {
             props: {
-                products: categoryProducts,
+                products: searchIsAvailable ? searchProductsCategory : categoryProducts,
                 categoryDetails: categoryDetails(),
-                productsDetails: productsDetails(categoryProducts)
+                productsDetails: productsDetails(searchIsAvailable ? searchProductsCategory : categoryProducts)
             }
         }
     )
 }
+
+export default SubCategory;
