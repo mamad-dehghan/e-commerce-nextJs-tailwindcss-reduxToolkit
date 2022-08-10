@@ -4,7 +4,6 @@ import Button from "../Button";
 import classNames from "classnames";
 import PaletteItem from "./PaletteItem";
 import SizeItem from "./SizeItem";
-import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
 import {useDispatch} from "react-redux";
 import {addProduct} from "../../../redux/slices/BasketSlice";
 import {useRouter} from "next/router";
@@ -68,7 +67,7 @@ const ProductCard = ({product}: props) => {
                 <div className={classNameTop}>
                     <span className='whitespace-nowrap'>سایزهای موجود:</span>
                     <div className={style.scrollHidden}>
-                        <div className='flex gap-2 items-center overflow-x-auto px-0.5'>
+                        <div className='flex gap-2 items-center px-0.5'>
                             {product.attributes.sizes.map(size => (
                                 <SizeItem size={size} key={size}/>
                             ))}
@@ -77,14 +76,14 @@ const ProductCard = ({product}: props) => {
                 </div>
             }
             <div className='relative h-[12.5rem] w-full flex-shrink-0 overflow-hidden flex items-center justify-center'>
-                <Image objectFit={'cover'} src={product.main_image} layout={'fill'} alt={''}/>
+                <Image objectFit={'cover'} src={product.main_image} quality={50} layout={'fill'} alt={product.name}/>
                 <div className={classNameShadow}/>
             </div>
             <div
                 className={classNameDetails}>
                 <div className='flex flex-col py-4 gap-6 px-2'>
                     <div>{product.name}</div>
-                    <div>{_3DigitSeparator(product.final_price)}<span className='pr-2'>ریال</span></div>
+                    <div>{product.final_price}<span className='pr-2'>تومان</span></div>
                     <div>
                         <Button
                             onClick={handleAddToBasket}
