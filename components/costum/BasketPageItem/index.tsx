@@ -8,7 +8,6 @@ import {addProduct, removeAllSingleProduct, removeProduct} from '../../../redux/
 import MultiButton from "../../common/MultiButton";
 import PaletteItem from "../../common/ProductCard/PaletteItem";
 import SizeItem from "../../common/ProductCard/SizeItem";
-import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
 
 type props = {
     product: IProduct,
@@ -77,8 +76,8 @@ const BasketPageItem = ({product, count, color = undefined, size = undefined}: p
                     <MultiButton id={product.id} reduceCount={handleReduce}
                                  increaseCount={handleIncrease}/>
                     <span
-                        className='text-weef-white '><span>{_3DigitSeparator(product.final_price)}</span><span
-                        className='px-2'>ريال</span></span>
+                        className='text-weef-white'><span>{product.final_price}</span><span
+                        className='px-2'>تومان</span></span>
                 </div>
             </div>
             <button onClick={handleRemoveAll}
@@ -92,8 +91,9 @@ const BasketPageItem = ({product, count, color = undefined, size = undefined}: p
             <div className={imageWrapper}>
                 <span
                     className='w-full h-full bg-weef-black flex items-center justify-center overflow-hidden'>
-                    <span className='-rotate-45 text-weef-white group-hover:text-weef-black flex justify-center items-center overflow-visible w-full h-full scale-[1.4]'>
-                        <Image src={product.main_image} alt={product.name} objectFit={'cover'} layout={'fill'} />
+                    <span
+                        className='-rotate-45 text-weef-white group-hover:text-weef-black flex justify-center items-center overflow-visible w-full h-full scale-[1.4]'>
+                        <Image src={product.main_image} alt={product.name} objectFit={'cover'} layout={'fill'}/>
                     </span>
                 </span>
             </div>

@@ -4,15 +4,17 @@ import DefaultLayout from "../../../../layouts/DefaultLayout";
 import CategorySelect from "../../../../components/common/CategorySelect";
 import MultiSelect from "../../../../components/common/MultiSelect";
 import ColorMultiSelect from "../../../../components/common/ColorMultiSelect";
+import SearchInput from '../../../../components/common/SearchInput';
 import CardsWrapper from "../../../../components/costum/CardsWrapper";
 import PriceRange from "../../../../components/common/PriceRange";
+import {useRouter} from "next/router";
 import axios from "axios";
+import _3DigitSeparator from "../../../../utilities/functions/_3DigitSeparator";
 import IProduct from "../../../../interfaces/IProduct";
 import ICategory from "../../../../interfaces/ICategory";
-
+import parse3DigitNumber from "../../../../utilities/functions/parse3DigitNumber";
 import style from './style.module.scss'
-import SearchInput from '../../../../components/common/SearchInput';
-import {useRouter} from "next/router";
+
 
 type productDetailsType = {
     brands: string[],
@@ -52,6 +54,16 @@ export enum filterEnum {
     price
 }
 
+enum sortEnum {
+    default,
+    cheapest,
+    most_expensive,
+    newest,
+    oldest,
+    most_popular,
+    most_rating
+}
+
 type actionType = {
     type: filterEnum,
     value: any
@@ -83,7 +95,7 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
     }, []);
 
     const [filter, filterDispatch] = useReducer(filterReducer, {brand: [], size: [], color: [], price: [0, 0]})
-    const [sort, setSort] = useState<string>('default');
+    const [sort, setSort] = useState<sortEnum>(sortEnum.default);
     const [page, setPage] = useState<number>(1);
     // @ts-ignore
     const [searchValue, setSearchValue] = useState<string>(router.query.search || '');
@@ -91,20 +103,20 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
     const handleSearch = useCallback(async (e: string) => {
         if (e.length === 0) {
             if (searchValue.length < 3)
-                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}`, undefined, {shallow: true});
+                await router.replace(`/Category/${router.query.MainCategory}/${router.query.SubCategory}`, undefined, {shallow: true});
             else {
-                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}`, undefined, {shallow: false});
+                await router.replace(`/Category/${router.query.MainCategory}/${router.query.SubCategory}`, undefined, {shallow: false});
                 setPage(1);
             }
         } else if (e.length < 3) {
             if (searchValue.length < 3)
-                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: true});
+                await router.replace(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: true});
             else {
-                await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: false});
+                await router.replace(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: false});
                 setPage(1);
             }
         } else {
-            await router.push(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: false});
+            await router.replace(`/Category/${router.query.MainCategory}/${router.query.SubCategory}?search=${e}`, undefined, {shallow: false});
             setPage(1);
         }
         setSearchValue(e)
@@ -149,23 +161,23 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
             }
             return contain;
         })
-        const filterProductsPrice: IProduct[] = filterProductsSize.filter(item => (item.final_price >= filter.price[0] && item.final_price <= filter.price[1]));
+        const filterProductsPrice: IProduct[] = filterProductsSize.filter(item => (parse3DigitNumber(item.final_price) >= filter.price[0] && parse3DigitNumber(item.final_price) <= filter.price[1]));
         return filterProductsPrice;
     }, [products, filter]);
 
     const sortProducts = useMemo(() => {
         let sortProductsTemp;
         switch (sort) {
-            case 'default':
+            case sortEnum.default:
                 sortProductsTemp = filterProducts.sort(() => Math.random() - 0.5);
                 break;
-            case 'cheap':
+            case sortEnum.cheapest:
                 sortProductsTemp = filterProducts.sort((a, b) => parseInt(a.final_price) - parseInt(b.final_price));
                 break
-            case 'expensive':
+            case sortEnum.most_expensive:
                 sortProductsTemp = filterProducts.sort((a, b) => parseInt(b.final_price) - parseInt(a.final_price));
                 break;
-            case 'rating':
+            case sortEnum.most_rating:
                 sortProductsTemp = filterProducts.sort((a, b) => b.attributes.rating - a.attributes.rating);
                 break;
             default:
@@ -197,7 +209,11 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
 
     useEffect(() => {
         setPage(1)
-    }, [filter]);
+    }, [filter, sort]);
+
+    useEffect(() => {
+        console.log(router.query.search)
+    }, [router.query.search]);
 
     useEffect(() => {
         searchInput.current && searchInput.current.scrollIntoView();
@@ -213,14 +229,15 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
                 <Head>
                     <title>{categoryDetails.name}</title>
                 </Head>
-                <div style={{minHeight: height, willChange:'height'}} ref={contentRight} className='h-full bg-weef-black w-[24rem]'>
+                <div style={{minHeight: height, willChange: 'height'}} ref={contentRight}
+                     className='h-full bg-weef-black w-[24rem]'>
                     <div
                         onClick={fixHeight}
                         className='bg-weef-black sticky top-[66px] w-[384px] h-full flex flex-col justify-start px-8 pt-8 pb-16 gap-4'>
                         <CategorySelect
                             position='relative'
                             options={categoryDetails.siblingCategories}
-                            initialValue={categoryDetails.currentCategory?.name}/>
+                            title={categoryDetails.currentCategory?.name}/>
                         <MultiSelect
                             onChange={handleChangeBrands}
                             position='relative'
@@ -259,24 +276,24 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
                                 <span
                                     className='text-weef-white whitespace-nowrap order-first'>مرتب سازی بر اساس:</span>
                             <a onClick={() => {
-                                setSort('default')
+                                setSort(sortEnum.most_popular)
                             }}
-                               className={`whitespace-nowrap ${sort === 'default' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === sortEnum.most_popular ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >پرفروش ترین</a>
                             <a onClick={() => {
-                                setSort('rating')
+                                setSort(sortEnum.most_rating)
                             }}
-                               className={`whitespace-nowrap ${sort === 'rating' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === sortEnum.most_rating ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >بیش ترین امتیاز</a>
                             <a onClick={() => {
-                                setSort('expensive')
+                                setSort(sortEnum.most_expensive)
                             }}
-                               className={`whitespace-nowrap ${sort === 'expensive' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === sortEnum.most_expensive ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >گران ترین</a>
                             <a onClick={() => {
-                                setSort('cheap')
+                                setSort(sortEnum.cheapest)
                             }}
-                               className={`whitespace-nowrap ${sort === 'cheap' ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
+                               className={`whitespace-nowrap ${sort === sortEnum.cheapest ? 'text-transparent bg-clip-text bg-primary order-first' : 'link'}`}
                             >ارزان ترین</a>
                         </div>
                     </div>
@@ -341,13 +358,29 @@ export async function getServerSideProps(input: any) {
         }
     }
 
-    const categoryProducts: IProduct[] = await axios(`http://localhost:8000/store/product/category/slug/${input.query.SubCategory}`)
+    let categoryProducts: IProduct[] = await axios(`http://localhost:8000/store/product/category/slug/${input.query.SubCategory}`)
         .then((res: any) => res.data);
+
+    categoryProducts = categoryProducts.map(item => {
+        return {
+            ...item,
+            final_price: _3DigitSeparator(item.final_price),
+            price: _3DigitSeparator(item.price)
+        }
+    })
 
     const searchProducts: IProduct[] = await axios(`http://localhost:8000/store/product/search/?search=${input.query.search}`)
         .then((res: any) => res.data);
 
-    const searchProductsCategory: IProduct[] = searchProducts.filter(item=>item.category === categoryDetails().currentCategory?.id);
+    let searchProductsCategory: IProduct[] = searchProducts.filter(item => item.category === categoryDetails().currentCategory?.id);
+
+    searchProductsCategory = searchProductsCategory.map(item => {
+        return {
+            ...item,
+            final_price: _3DigitSeparator(item.final_price),
+            price: _3DigitSeparator(item.price)
+        }
+    })
 
     const productsDetails = (products: IProduct[]): productDetailsType => {
         const allBrands: string[] = products.map(item => item.attributes.brand);
@@ -364,7 +397,7 @@ export async function getServerSideProps(input: any) {
         let maxPrice: number = 0;
         let minPrice: number = Infinity;
         products.forEach(item => {
-            const price = parseInt(item.price);
+            const price = parse3DigitNumber(item.price);
             if (price > maxPrice)
                 maxPrice = price;
             if (price < minPrice)
@@ -385,7 +418,7 @@ export async function getServerSideProps(input: any) {
             props: {
                 products: searchIsAvailable ? searchProductsCategory : categoryProducts,
                 categoryDetails: categoryDetails(),
-                productsDetails: productsDetails(searchIsAvailable ? searchProductsCategory : categoryProducts)
+                productsDetails: productsDetails(categoryProducts)
             }
         }
     )

@@ -1,5 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import IProduct from "../../../interfaces/IProduct";
+import parse3digitNumber from "../../../utilities/functions/parse3DigitNumber";
 
 type attributeType = {
     color?: string,
@@ -47,7 +48,7 @@ const BasketSlice = createSlice({
                 temp.count += 1;
                 state.products.splice(index, 1, temp);
             }
-            state.finalSum += parseInt(action.payload.product.final_price);
+            state.finalSum += parse3digitNumber(action.payload.product.final_price);
             state.countSum += 1;
         },
         removeProduct: (state, action) => {
@@ -63,7 +64,7 @@ const BasketSlice = createSlice({
                     temp.count -= 1;
                     state.products.splice(index, 1, temp);
                 }
-                state.finalSum -= parseInt(action.payload.final_price);
+                state.finalSum -= parse3digitNumber(action.payload.final_price);
                 state.countSum -= 1;
             }
         },
@@ -74,21 +75,21 @@ const BasketSlice = createSlice({
             } else {
                 const temp = state.products[index];
                 state.products.splice(index, 1);
-                state.finalSum -= parseInt(action.payload.final_price) * temp.count;
+                state.finalSum -= parse3digitNumber(action.payload.final_price) * temp.count;
                 state.countSum -= temp.count;
             }
         },
         clearBasket: () => {
             return initialState;
         },
-        changeProductColor:(state, action)=>{
-            const index = state.products.findIndex(item=>item.product.id === action.payload.id);
+        changeProductColor: (state, action) => {
+            const index = state.products.findIndex(item => item.product.id === action.payload.id);
             if (index === -1)
                 return state;
             state.products[index].attribute.color = action.payload.color;
         },
-        changeProductSize:(state, action)=>{
-            const index = state.products.findIndex(item=>item.product.id === action.payload.id);
+        changeProductSize: (state, action) => {
+            const index = state.products.findIndex(item => item.product.id === action.payload.id);
             if (index === -1)
                 return state;
             state.products[index].attribute.size = action.payload.size;
@@ -97,4 +98,11 @@ const BasketSlice = createSlice({
 })
 
 export default BasketSlice.reducer;
-export const {addProduct, removeProduct, removeAllSingleProduct, clearBasket, changeProductColor, changeProductSize} = BasketSlice.actions;
+export const {
+    addProduct,
+    removeProduct,
+    removeAllSingleProduct,
+    clearBasket,
+    changeProductColor,
+    changeProductSize
+} = BasketSlice.actions;
