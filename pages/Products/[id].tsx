@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import Head from "next/head";
 import Image from 'next/image'
 import DefaultLayout from "../../layouts/DefaultLayout";
@@ -9,8 +9,9 @@ import _3DigitSeparator from "../../utilities/functions/_3DigitSeparator";
 import axios from "axios";
 import IProduct from "../../interfaces/IProduct";
 import ICategory from "../../interfaces/ICategory";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {addProduct, changeProductColor, changeProductSize, removeProduct} from "../../redux/slices/BasketSlice";
+import {useRouter} from "next/router";
 
 
 type breadcrumbType = {
@@ -32,9 +33,27 @@ type props = {
 
 const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, similarProducts}: props) => {
     const dispatch = useDispatch();
+    const router = useRouter();
+    const {products} = useSelector((state:any) => state.BasketSlice)
 
-    const [selectedColor, setSelectedColor] = useState<string | undefined>(product.attributes.colors ? product.attributes.colors[0] : undefined);
-    const [selectedSize, setSelectedSize] = useState<string | number | undefined>(product.attributes.sizes ? product.attributes.sizes[0] : undefined);
+    const initialAttribute = useMemo(()=>{
+        const index:number = products.findIndex((item:any)=>item.product.id == router.query.id);
+        if (index === -1){
+            return {
+                color: product.attributes.colors ? product.attributes.colors[0] : undefined,
+                size:product.attributes.sizes ? product.attributes.sizes[0] : undefined
+            }
+        }else {
+            return {
+                color: products[index].attribute.color,
+                size:products[index].attribute.size
+            }
+        }
+    },[])
+    console.log(initialAttribute)
+
+    const [selectedColor, setSelectedColor] = useState<string | undefined>(initialAttribute.color);
+    const [selectedSize, setSelectedSize] = useState<string | number | undefined>(initialAttribute.size);
     const [selectedImage, setSelectedImage] = useState<number>(0);
 
     useLayoutEffect(() => {
@@ -107,7 +126,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                                                             <div key={color}
                                                                  onClick={() => setSelectedColor(color)}
                                                                  style={{backgroundColor: color}}
-                                                                 className='w-9 h-9 rounded-full hover:border hover:border-primary-red active:border-2 active:border-primary-red cursor-pointer'/>
+                                                                 className={`w-9 h-9 rounded-full cursor-pointer ${selectedColor===color?'border-2 border-primary-red':'hover:border hover:border-primary-orange'}`}/>
                                                         ))
                                                     }
                                                 </div>
@@ -119,13 +138,15 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                                                 className='flex float-left min-w-[50%] h-14 items-center justify-center md:justify-start px-4 gap-4 self-end'>
                                                 <span
                                                     className='text-weef-white whitespace-nowrap'>سایز های موجود:</span>
-                                                <div className='flex gap-1'>
+                                                <div className='flex gap-1 items-center'>
                                                     {
                                                         product.attributes.sizes.map(size => (
                                                             <div key={size}
-                                                                 onClick={() => setSelectedSize(size)}
-                                                                 className='w-5 h-5 flex items-center justify-center rounded-sm bg-weef-white text-weef-black cursor-pointer hover:border hover:border-primary-red'>
+                                                                 onClick={() => setSelectedSize(size)} className={`cursor-pointer rounded-sm transition-all duration-300 ${selectedSize === size ? 'p-0.5 bg-primary-red' : 'p-[1px] hover:bg-primary-orange'}`}>
+                                                            <div
+                                                                 className={`w-5 h-5 flex items-center justify-center rounded-sm bg-weef-white text-weef-black `}>
                                                                 {size}
+                                                            </div>
                                                             </div>
                                                         ))
                                                     }
@@ -276,6 +297,7 @@ export async function getServerSideProps(input: any) {
                 {
                     ...product,
                     price: _3DigitSeparator(product?.price),
+                    final_price: _3DigitSeparator(product?.final_price),
                     images: product.images ? [product.main_image, ...product.images] : [product.main_image]
                 },
             breadcrumb,
