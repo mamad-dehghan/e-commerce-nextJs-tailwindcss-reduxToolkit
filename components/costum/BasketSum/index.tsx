@@ -3,14 +3,27 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../redux/store";
 import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
 import {clearBasket} from "../../../redux/slices/BasketSlice";
+import {useRouter} from "next/router";
+import {toast, ToastContainer} from "react-toastify";
 
 const BasketSum = () => {
     const {finalSum, countSum} = useSelector((state: RootState) => state.BasketSlice)
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const handleClearBasket = useCallback(() => {
         dispatch(clearBasket())
     }, [dispatch])
+
+    const handleConfirm = useCallback(() => {
+        // ---- save basket on backend ???
+        if (countSum !== 0)
+            router.push('/Payment/information');
+        else {
+            toast.clearWaitingQueue();
+            toast('سبد خرید شما خالی است');
+        }
+    }, [])
 
     return (
         <div className='relative overflow-visible'>
@@ -23,6 +36,7 @@ const BasketSum = () => {
                             </span>
             </button>
             <button
+                onClick={handleConfirm}
                 className='absolute top-0 right-0 translate-x-[33px] -translate-y-1/2 w-[105px] h-[105px] rotate-45 group from-primary-red to-primary-orange bg-gradient-to-tr p-[1px] flex items-center justify-center z-20'>
                             <span
                                 className='w-full h-full bg-weef-black group-hover:bg-transparent flex items-center justify-center overflow-hidden'>
@@ -46,6 +60,8 @@ const BasketSum = () => {
                     <span>تومان</span>
                 </div>
             </div>
+            <ToastContainer
+                toastClassName={"bg-secondary relative flex p-1 min-h-10 rounded-md justify-between overflow-hidden cursor-pointer"}/>
         </div>
     );
 }
