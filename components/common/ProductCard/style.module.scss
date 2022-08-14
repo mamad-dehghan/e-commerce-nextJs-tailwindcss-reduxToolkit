@@ -1,0 +1,12 @@
+.scrollHidden{
+  width:fit-content;
+  flex-grow:1;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar{
+    display: none;
+  }
+}

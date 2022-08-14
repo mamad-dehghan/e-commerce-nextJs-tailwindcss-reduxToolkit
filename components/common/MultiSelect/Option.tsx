@@ -1,11 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import classNames from "classnames";
 
-// type option = {
-//     value: string,
-//     text: string,
-// }
-
 type props = {
     option: string,
     toggle: Function,
@@ -17,7 +12,7 @@ const Option = ({option, toggle, initial}: props) => {
 
     const classLinks = useMemo(() => {
         return classNames(
-            'leading-loose whitespace-nowrap hover:bg-weef-black min-w-fit text-xl  block text-weef-white  no-underline'
+            'leading-loose whitespace-nowrap min-w-fit text-xl block text-weef-white no-underline'
         )
     }, []);
 
@@ -30,8 +25,7 @@ const Option = ({option, toggle, initial}: props) => {
               }}>
             <span
                 className={classLinks}>{option}</span>
-            <input className='pointer-events-none'
-                   style={{accentColor: '#FF626D'}}
+            <input className='pointer-events-none accent-primary-red'
                    type="checkbox"
                    readOnly={true}
                    checked={checked}/>

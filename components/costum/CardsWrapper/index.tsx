@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import ProductCard from "../../common/ProductCard";
-import IProduct from "../../../interfaces/IProduct";
+import IProduct from "../../../interfaces/product";
 
 type props = {
     products: IProduct[]

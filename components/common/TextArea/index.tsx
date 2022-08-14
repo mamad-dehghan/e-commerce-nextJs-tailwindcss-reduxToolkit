@@ -1,7 +1,7 @@
 import React, {InputHTMLAttributes, useEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
 
-const Input = ({className, about, ...props}: InputHTMLAttributes<HTMLInputElement>) => {
+const TextArea = ({className, about, ...props}: InputHTMLAttributes<HTMLTextAreaElement>) => {
     const [errorMessage, setErrorMessage] = useState<string>('')
     useEffect(() => {
         if (about)
@@ -21,7 +21,7 @@ const Input = ({className, about, ...props}: InputHTMLAttributes<HTMLInputElemen
 
     const inputClassName = useMemo(() => {
         return classNames(
-            'bg-secondary text-weef-white ring-[1px] placeholder-weef-grey outline-0 focus:outline-0 text-base rounded-md focus:border-0 border-0 focus:ring-primary-red block w-[240px] sm:w-[320px] p-2 z-20',
+            'bg-secondary h-32 text-weef-white ring-[1px] placeholder-weef-grey outline-0 focus:outline-0 text-base rounded-md focus:border-0 border-0 focus:ring-primary-red block w-[240px] sm:w-[320px] p-2 z-20 resize-none',
             className,
             about ? 'ring-primary-red' : 'ring-secondary'
         )
@@ -29,7 +29,7 @@ const Input = ({className, about, ...props}: InputHTMLAttributes<HTMLInputElemen
 
     return (
         <div className='relative w-full flex justify-end'>
-            <input
+            <textarea
                 dir='auto'
                 className={inputClassName}
                 {...props}/>
@@ -40,4 +40,4 @@ const Input = ({className, about, ...props}: InputHTMLAttributes<HTMLInputElemen
     );
 }
 
-export default Input;
+export default TextArea;

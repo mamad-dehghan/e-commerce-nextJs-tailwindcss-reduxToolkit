@@ -1,9 +1,8 @@
-import React, {SelectHTMLAttributes, useEffect, useMemo, useState} from 'react';
+import React, {SelectHTMLAttributes, useMemo, useState} from 'react';
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
-import ICategory from "../../../interfaces/ICategory";
-import Link from "next/link";
 import {useRouter} from "next/router";
+import ICategory from "../../../interfaces/category";
 
 type option = {
     name: string,
@@ -13,19 +12,13 @@ type option = {
 
 interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
     position: 'absolute' | 'relative',
-    initialValue?: string,
+    title: string,
     options: option[] | undefined
 }
 
-const Select = ({position, initialValue = 'دسته یندی', options, onChange}: Interface) => {
+const CategorySelect = ({position, title = 'دسته بندی', options}: Interface) => {
     const [open, setOpen] = useState<boolean>(false);
-    const [value, setValue] = useState<string>(initialValue);
-    const [event, setEvent] = useState<any>();
     const router = useRouter();
-
-    useEffect(() => {
-        onChange && event && onChange(event);
-    }, [event, onChange])
 
     const classSelect = useMemo(() => {
         return classNames(
@@ -71,7 +64,7 @@ const Select = ({position, initialValue = 'دسته یندی', options, onChange
                 className={classContainer}>
                 <span
                     onClick={() => setOpen(open => !open)}
-                    className={Container}>{initialValue}</span>
+                    className={Container}>{title}</span>
                 <div
                     className={classSelect}>
                     <div
@@ -80,13 +73,11 @@ const Select = ({position, initialValue = 'دسته یندی', options, onChange
                             options?.map(option => (
                                 <span
                                     key={option.slug}
-                                    onClick={(e) => {
-                                        setEvent(e)
-                                        setValue(option.slug);
+                                    onClick={() => {
                                         setOpen(false);
                                         router.push(`/Category/${option.parent?.slug}/${option.slug}`)
                                     }}
-                                    className={classLinks}>{option.name}<>{console.log(option)}</></span>
+                                    className={classLinks}>{option.name}</span>
                             ))
                         }
                     </div>
@@ -97,4 +88,4 @@ const Select = ({position, initialValue = 'دسته یندی', options, onChange
     );
 }
 
-export default React.memo(Select);
+export default React.memo(CategorySelect);

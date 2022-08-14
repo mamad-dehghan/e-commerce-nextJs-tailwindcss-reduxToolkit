@@ -5,7 +5,7 @@ import ProductCard from "../../common/ProductCard";
 import SwiperButton from "../../../utilities/icons/SwiperButton";
 import 'swiper/css/navigation';
 import 'swiper/css';
-import IProduct from "../../../interfaces/IProduct";
+import IProduct from "../../../interfaces/product";
 
 type props = {
     products: IProduct[]
