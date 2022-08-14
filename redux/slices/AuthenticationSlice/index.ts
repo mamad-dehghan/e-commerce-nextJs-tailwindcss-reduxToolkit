@@ -1,4 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {ISuccessLogin} from "../../../interfaces/login";
+import {ISuccessSignIn} from "../../../interfaces/signIn";
 
 export type AuthSliceType = {
     "logStatus": 'notLog' | 'log',
@@ -7,6 +9,8 @@ export type AuthSliceType = {
     "last_name": string,
     "email": string,
     "address": string | null,
+    "address_id" : number | null,
+    "postal_number" : string | null,
     "phone": string | null,
     "token": undefined | string,
     "remember": boolean
@@ -18,41 +22,23 @@ const initialState: AuthSliceType = {
     "last_name": '',
     "email": '',
     "address": null,
+    "address_id" : null,
+    "postal_number" : null,
     "phone": null,
     "token": undefined,
-    "remember":false
+    "remember": false
 }
 export type tryLoginType = {
     username: string,
     password: string
 }
 
-export interface rejectedLogin {
-    "status": "failed"
-}
-
-export interface fulfilledLogin {
-    "userInfo": {
-        "id": number,
-        "last_login": any,
-        "is_superuser": false,
-        "username": string,
-        "first_name": string,
-        "last_name": string,
-        "email": string,
-        "is_staff": false,
-        "is_active": boolean,
-        "date_joined": string,
-        "address": string | null,
-        "phone": string | null,
-        "groups": [],
-        "user_permissions": []
-    },
-    "token": string
-}
-
-function instanceOfFulfilledLogin(data: any): data is fulfilledLogin {
+function instanceOfFulfilledLogin(data: any): data is ISuccessLogin {
     return 'token' in data;
+}
+
+function instanceOfFulfilledSignIn(data: any): data is ISuccessSignIn {
+    return 'id' in data;
 }
 
 // export const tryLogin = createAsyncThunk('check', async (data,a) => {
@@ -72,8 +58,7 @@ const AuthenticationSlice = createSlice({
     name: 'redux/auth',
     initialState,
     reducers: {
-        alterLogin: (state, action)=>{
-            console.log('data', action.payload);
+        alterLogin: (state, action) => {
             if (instanceOfFulfilledLogin(action.payload.data)) {
                 return {
                     "logStatus": 'log',
@@ -82,13 +67,32 @@ const AuthenticationSlice = createSlice({
                     "last_name": action.payload.data.userInfo.last_name,
                     "email": action.payload.data.userInfo.email,
                     "address": action.payload.data.userInfo.address,
+                    "address_id": state.address_id,
+                    "postal_number": state.postal_number,
                     "phone": action.payload.data.userInfo.phone,
                     "token": action.payload.data.token,
-                    "remember" : action.payload.remember
+                    "remember": action.payload.save
                 }
             } else {
                 return state;
             }
+        },
+        alterSignIn: (state, action) => {
+            if (instanceOfFulfilledSignIn(action.payload.data)) {
+                state.username = action.payload.data.userInfo.username;
+                state.email = action.payload.data.userInfo.email;
+                state.remember = action.payload.save
+            } else {
+                return state;
+            }
+        },
+        alterAddAddress:(state, action)=>{
+            state.address_id = action.payload.id;
+            state.address = action.payload.address;
+            state.postal_number = action.payload.postalNumber;
+        },
+        alterCompleteInformation:(state, action)=>{
+            state.phone = action.payload.data.phone
         }
     },
     // extraReducers: (builder: ActionReducerMapBuilder<AuthSliceType>) => {
@@ -113,4 +117,4 @@ const AuthenticationSlice = createSlice({
 })
 
 export default AuthenticationSlice.reducer;
-export const {alterLogin} = AuthenticationSlice.actions;
+export const {alterLogin, alterSignIn, alterAddAddress} = AuthenticationSlice.actions;
