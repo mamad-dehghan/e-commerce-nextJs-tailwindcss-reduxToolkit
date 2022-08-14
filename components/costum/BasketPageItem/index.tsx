@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import IProduct from "../../../interfaces/IProduct";
+import IProduct from "../../../interfaces/product";
 import classNames from "classnames";
 import Image from 'next/image'
 import Link from "next/link";

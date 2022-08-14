@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import classNames from "classnames";
-import IProduct from "../../../interfaces/IProduct";
-import ICategory from "../../../interfaces/ICategory";
+import IProduct from "../../../interfaces/product";
+import ICategory from "../../../interfaces/category";
 import Link from "next/link";
 import CardSlider from "../CardSlider";
 import CardsWrapper from "../CardsWrapper";

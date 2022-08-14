@@ -7,7 +7,7 @@ import SizeItem from "./SizeItem";
 import {useDispatch} from "react-redux";
 import {addProduct} from "../../../redux/slices/BasketSlice";
 import {useRouter} from "next/router";
-import IProduct from "../../../interfaces/IProduct";
+import IProduct from "../../../interfaces/product";
 import style from './style.module.scss'
 
 type props = {
@@ -44,7 +44,7 @@ const ProductCard = ({product}: props) => {
         return classNames(
             'flex flex-col py-5 transition-all duration-500 items-center ',
             hover ? 'h-full' : 'h-[6.5rem]',
-            product.attributes.colors?.length === 1 ? 'justify-center ':'justify-between '
+            product.attributes.colors?.length === 1 ? 'justify-center ' : 'justify-between '
         )
     }, [hover, product.attributes.colors]);
 
@@ -59,7 +59,7 @@ const ProductCard = ({product}: props) => {
 
     return (
         <div
-            onClick={() => router.push(`/Products/${product.id}`, undefined, {scroll:true})}
+            onClick={() => router.push(`/Products/${product.id}`, undefined, {scroll: true})}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             className='relative cursor-pointer items-stretch justify-items-stretch w-[15.5rem] h-80 ring-1 ring-primary-red overflow-hidden rounded'>

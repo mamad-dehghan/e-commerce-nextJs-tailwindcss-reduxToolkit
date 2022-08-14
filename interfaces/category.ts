@@ -1,7 +1,7 @@
-export default interface Category {
+export default interface ICategory {
     id: number,
-    parent: null | Category,
-    children: null | Category[],
+    parent: null | ICategory,
+    children: null | ICategory[],
     name: string,
     slug: string
     icon: string | null,
