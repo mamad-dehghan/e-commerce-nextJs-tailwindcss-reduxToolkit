@@ -29,7 +29,7 @@ const ItemRow = ({children, backgroundContent, backgroundContentOnHover}: props)
                         background: hover ? backgroundContentOnHover : backgroundContent
                     }}/>
                 <div className='w-full h-full bg-primary py-0.5 z-20'>
-                    <div className='w-full h-full transition-all duration-300 flex items-center justify-center'
+                    <div className='w-full h-full transition-all duration-300 flex items-center justify-center pointer-events-none'
                          style={{
                              background: hover ? backgroundContentOnHover : backgroundContent
                          }}>
