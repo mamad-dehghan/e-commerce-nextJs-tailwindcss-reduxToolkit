@@ -1,0 +1,14 @@
+.scrollHidden {
+  background-color: #232227;
+  overscroll-behavior: none;
+  max-height: 292px;
+  border-radius: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
