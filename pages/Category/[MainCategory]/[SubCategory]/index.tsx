@@ -10,8 +10,8 @@ import PriceRange from "../../../../components/common/PriceRange";
 import {useRouter} from "next/router";
 import axios from "axios";
 import _3DigitSeparator from "../../../../utilities/functions/_3DigitSeparator";
-import IProduct from "../../../../interfaces/IProduct";
-import ICategory from "../../../../interfaces/ICategory";
+import IProduct from "../../../../interfaces/product";
+import ICategory from "../../../../interfaces/category";
 import parse3DigitNumber from "../../../../utilities/functions/parse3DigitNumber";
 import style from './style.module.scss'
 
@@ -212,10 +212,6 @@ const SubCategory = ({products, categoryDetails, productsDetails}: props) => {
     }, [filter, sort]);
 
     useEffect(() => {
-        console.log(router.query.search)
-    }, [router.query.search]);
-
-    useEffect(() => {
         searchInput.current && searchInput.current.scrollIntoView();
     }, [page]);
 
@@ -397,7 +393,7 @@ export async function getServerSideProps(input: any) {
         let maxPrice: number = 0;
         let minPrice: number = Infinity;
         products.forEach(item => {
-            const price = parse3DigitNumber(item.price);
+            const price = parse3DigitNumber(item.final_price);
             if (price > maxPrice)
                 maxPrice = price;
             if (price < minPrice)

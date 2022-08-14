@@ -7,8 +7,8 @@ import Section from "../../components/costum/Section";
 import MultiButton from "../../components/common/MultiButton";
 import _3DigitSeparator from "../../utilities/functions/_3DigitSeparator";
 import axios from "axios";
-import IProduct from "../../interfaces/IProduct";
-import ICategory from "../../interfaces/ICategory";
+import IProduct from "../../interfaces/product";
+import ICategory from "../../interfaces/category";
 import {useDispatch, useSelector} from "react-redux";
 import {addProduct, changeProductColor, changeProductSize, removeProduct} from "../../redux/slices/BasketSlice";
 import {useRouter} from "next/router";
@@ -50,8 +50,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
             }
         }
     },[])
-    console.log(initialAttribute)
-
+    // console.log(initialAttribute)
     const [selectedColor, setSelectedColor] = useState<string | undefined>(initialAttribute.color);
     const [selectedSize, setSelectedSize] = useState<string | number | undefined>(initialAttribute.size);
     const [selectedImage, setSelectedImage] = useState<number>(0);
@@ -263,7 +262,7 @@ export async function getServerSideProps(input: any) {
     const product: IProduct = await axios(`http://localhost:8000/store/product/id/${input.query.id}`)
         .then(res => res.data);
 
-    let similarProducts: IProduct[] = await axios('http://localhost:8000/store/product/featured?format=json')
+    let similarProducts: IProduct[] = await axios('http://localhost:8000/store/product')
         .then((res: any) => res.data)
     similarProducts = similarProducts.filter(item => item.id != input.query.id);
 

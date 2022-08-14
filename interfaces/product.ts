@@ -17,7 +17,7 @@ export default interface IProduct {
     price: string,
     final_price: string,
     main_image: string ,
-    images: string[] | null,
+    images: string[] ,
     attributes: attributes,
     options: any,
     extra_information: any,

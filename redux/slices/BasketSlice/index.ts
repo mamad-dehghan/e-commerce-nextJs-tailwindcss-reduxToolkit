@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import IProduct from "../../../interfaces/IProduct";
+import IProduct from "../../../interfaces/product";
 import parse3digitNumber from "../../../utilities/functions/parse3DigitNumber";
 
 type attributeType = {
