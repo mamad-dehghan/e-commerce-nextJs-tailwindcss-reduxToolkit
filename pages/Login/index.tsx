@@ -8,13 +8,13 @@ import Head from "next/head";
 import {useFormik} from "formik";
 import * as Yup from 'yup';
 import {useDispatch, useSelector} from "react-redux";
-import {
-    alterLogin, AuthSliceType,
-    fulfilledLogin,
-    rejectedLogin,
-    tryLoginType
-} from "../../redux/slices/AuthenticationSlice";
+import {alterLogin, AuthSliceType, tryLoginType} from "../../redux/slices/AuthenticationSlice";
 import axios from "axios";
+import {useRouter} from "next/router";
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {AppDispatch} from "../../redux/store";
+import {IFailedLogin, ISuccessLogin} from "../../interfaces/login";
 
 const LoginSchema = Yup.object().shape({
     username: Yup.string()
@@ -28,17 +28,18 @@ const LoginSchema = Yup.object().shape({
 });
 
 const Login = () => {
-    const {username, remember}:AuthSliceType = useSelector((state: any) => state.AuthenticationSlice);
+    const {username, remember}: AuthSliceType = useSelector((state: any) => state.AuthenticationSlice);
     const [rememberMe, setRememberMe] = useState<boolean>(remember);
-    const dispatch: any = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
+    const router = useRouter()
 
-    const initialValues = useMemo(()=>{
-        if (remember){
+    const initialValues = useMemo(() => {
+        if (remember) {
             return {
                 username: username || '',
                 password: ''
             }
-        }else
+        } else
             return {
                 username: '',
                 password: ''
@@ -54,11 +55,27 @@ const Login = () => {
     });
 
     const sendData = useCallback(async (values: tryLoginType) => {
-        const response: fulfilledLogin | rejectedLogin = await axios.post('http://localhost:8000/user/login/',
+        let status: any = ''
+        const response: ISuccessLogin | IFailedLogin = await axios.post('http://localhost:8000/user/login/',
             values)
-            .then(res => res.data)
-            .catch(error => error)
-        dispatch(alterLogin({data:response, save:rememberMe}))
+            .then(res => {
+                status = res.status;
+                return res.data;
+            })
+            .catch(error => {
+                status = error.status;
+                return error;
+            })
+        dispatch(alterLogin({data: response, save: rememberMe}))
+        if (status === 200) {
+            if (router.query.next !== undefined)
+                router.replace(`${router.query.next}`);
+            else
+                router.push('/Dashboard');
+        } else {
+            toast("failed login");
+            formik.resetForm();
+        }
     }, [dispatch, rememberMe])
 
     return (
@@ -106,7 +123,7 @@ const Login = () => {
                     <label htmlFor='rememberMe' className='text-weef-white cursor-pointer'>من را به خاطر بسپار</label>
                     <input checked={rememberMe}
                            disabled={formik.isSubmitting}
-                           onChange={(e)=>setRememberMe(e.target.checked)}
+                           onChange={(e) => setRememberMe(e.target.checked)}
                            type="checkbox" className='cursor-pointer accent-primary-red'
                            name="rememberMe" id="rememberMe"/>
                 </div>
@@ -125,6 +142,7 @@ const Login = () => {
                     </Link>
                 </div>
             </form>
+            <ToastContainer/>
         </div>
     );
 }
