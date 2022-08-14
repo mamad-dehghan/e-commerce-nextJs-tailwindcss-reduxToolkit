@@ -7,6 +7,7 @@ import {persist, store} from "../redux/store";
 import {PersistGate} from "redux-persist/integration/react";
 import {useRouter} from 'next/router';
 import {useMemo} from "react";
+import {CookiesProvider} from "react-cookie";
 
 function MyApp({Component, pageProps}: AppProps) {
     const router = useRouter()
@@ -18,11 +19,13 @@ function MyApp({Component, pageProps}: AppProps) {
     }, [router.asPath])
 
     return (
-        <Provider store={store}>
-            <PersistGate persistor={persist}>
-                <Component key={key} {...pageProps} />
-            </PersistGate>
-        </Provider>
+        <CookiesProvider>
+            <Provider store={store}>
+                <PersistGate persistor={persist}>
+                    <Component key={key} {...pageProps} />
+                </PersistGate>
+            </Provider>
+        </CookiesProvider>
     )
 }
 
