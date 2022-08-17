@@ -7,13 +7,11 @@ import Button from "../../components/common/Button";
 import Link from "next/link";
 import {useFormik} from "formik";
 import * as Yup from 'yup';
-import {alterSignIn} from "../../redux/slices/AuthenticationSlice";
-import axios from "axios";
-import {useDispatch} from "react-redux";
-import {AppDispatch} from "../../redux/store";
+import {router} from "next/client";
+import {useCookies} from "react-cookie";
+import {trySignIn} from "../../utilities/functions/ApiCall/signin";
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {IFailedSignIn, ISuccessSignIn} from "../../interfaces/signIn";
 
 interface formValues {
     userName: string,
@@ -47,7 +45,7 @@ const SignInSchema = Yup.object().shape({
 
 const SignIn = () => {
     const [rememberMe, setRememberMe] = useState<boolean>(false);
-    const dispatch: AppDispatch = useDispatch();
+    const [, setRememberMeCookie] = useCookies<string>(['rememberMe']);
     const formik = useFormik({
         initialValues,
         validationSchema: SignInSchema,
@@ -60,31 +58,23 @@ const SignIn = () => {
         },
     });
 
-    const sendData = useCallback(async (values: any) => {
-        let status: any = ''
-        const response: ISuccessSignIn | IFailedSignIn = await axios.post('http://localhost:8000/user/register/',
-            values)
-            .then(res => {
-                status = res.status
-                return res.data
+    const sendData = useCallback((values: any) => {
+        trySignIn(values)
+            .then(isValid => {
+                if (isValid) {
+                    setRememberMeCookie('rememberMe', rememberMe, {path: '/'});
+                    router.back()
+                } else {
+                    toast("username already exists");
+                    formik.resetForm({values: {...values, password: '', confirmPassword: ''}})
+                }
             })
-            .catch(error => {
-                status = error.status
-                return error
-            });
-        if (status === 201) {
-            dispatch(alterSignIn({data: response, save: rememberMe}))
-        } else {
-            console.log(formik.values)
-            toast("username already exists");
-            formik.resetForm({values: {...values, password: '', confirmPassword: ''}})
-        }
     }, [])
 
     return (
         <div className='w-full h-screen flex items-center justify-center bg-secondary'>
             <Head>
-                <title>صفحه ثبت‌نام</title>
+                <title>ثبت‌نام</title>
             </Head>
             <WaveBackground/>
             <form onSubmit={formik.handleSubmit}
@@ -155,6 +145,7 @@ const SignIn = () => {
                     <input
                         disabled={formik.isSubmitting}
                         onChange={(e) => setRememberMe(e.target.checked)}
+                        checked={rememberMe}
                         type="checkbox" className='cursor-pointer accent-primary-red'
                         name="rememberMe" id="rememberMe"/>
                 </div>

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import WeefIcon from "../../utilities/icons/Weef";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
@@ -7,14 +7,16 @@ import Link from "next/link";
 import Head from "next/head";
 import {useFormik} from "formik";
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from "react-redux";
-import {alterLogin, AuthSliceType, tryLoginType} from "../../redux/slices/AuthenticationSlice";
-import axios from "axios";
 import {useRouter} from "next/router";
+import {checkLogin, tryToLogin} from "../../utilities/functions/ApiCall/login";
+import {useCookies} from "react-cookie";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {AppDispatch} from "../../redux/store";
-import {IFailedLogin, ISuccessLogin} from "../../interfaces/login";
+
+type formValuesType = {
+    username: string,
+    password: string
+}
 
 const LoginSchema = Yup.object().shape({
     username: Yup.string()
@@ -28,58 +30,54 @@ const LoginSchema = Yup.object().shape({
 });
 
 const Login = () => {
-    const {username, remember}: AuthSliceType = useSelector((state: any) => state.AuthenticationSlice);
-    const [rememberMe, setRememberMe] = useState<boolean>(remember);
-    const dispatch: AppDispatch = useDispatch();
-    const router = useRouter()
+    const [cookies, setCookie, removeCookie] = useCookies(['token']);
+    const [rememberMeCookie, setRemember] = useCookies<string>(['rememberMe']);
+    const [rememberMe, setRememberMe] = useState<boolean>(rememberMeCookie.rememberMe === "true");
+    const [initialFormValues, setInitialFormValues] = useState<formValuesType>({username: '', password: ''});
+    const router = useRouter();
 
-    const initialValues = useMemo(() => {
-        if (remember) {
-            return {
-                username: username || '',
-                password: ''
-            }
-        } else
-            return {
-                username: '',
-                password: ''
-            }
+    useLayoutEffect(() => {
+        if (rememberMeCookie.rememberMe) {
+            checkLogin(cookies.token)
+                .then((res) => {
+                    const [status, response]:any = res;
+                    if (status)
+                        setInitialFormValues({
+                            username: response.username,
+                            password: ''
+                        })
+                    else
+                        removeCookie("token");
+                })
+        }
     }, [])
 
     const formik = useFormik({
-        initialValues,
+        initialValues: initialFormValues,
         validationSchema: LoginSchema,
+        enableReinitialize: true,
         onSubmit: values => {
-            sendData(values);
+            setRemember('rememberMe', rememberMe, {path: '/'});
+
+            tryToLogin(values)
+                .then(([status, response]) => {
+                    if (status === 200) {
+                        setCookie('token', response.token, {path: '/'});
+                        if (router.query.next !== undefined)
+                            router.replace(`${router.query.next}`);
+                        else
+                            router.push('/Dashboard');
+                    } else {
+                        removeCookie("token");
+                        toast("کاربری با این مشخصات یافت نشد");
+                        formik.resetForm();
+                    }
+                })
         },
     });
 
-    const sendData = useCallback(async (values: tryLoginType) => {
-        let status: any = ''
-        const response: ISuccessLogin | IFailedLogin = await axios.post('http://localhost:8000/user/login/',
-            values)
-            .then(res => {
-                status = res.status;
-                return res.data;
-            })
-            .catch(error => {
-                status = error.status;
-                return error;
-            })
-        dispatch(alterLogin({data: response, save: rememberMe}))
-        if (status === 200) {
-            if (router.query.next !== undefined)
-                router.replace(`${router.query.next}`);
-            else
-                router.push('/Dashboard');
-        } else {
-            toast("failed login");
-            formik.resetForm();
-        }
-    }, [dispatch, rememberMe])
-
     return (
-        <div className='w-full h-screen flex items-center justify-center bg-secondary'>
+        <div className='w-full h-screen flex items-center justify-center bg-secondary overflow-hidden'>
             <Head>
                 <title>صفحه ورود</title>
             </Head>
@@ -97,6 +95,7 @@ const Login = () => {
                     <label htmlFor="username" className='text-weef-white'>نام کاربری:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            type='text'
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
                             id='username' name='username'
@@ -110,6 +109,7 @@ const Login = () => {
                     <label htmlFor="password" className='text-weef-white'>رمز ورود:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            type='password'
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
                             id='password' name='password'
