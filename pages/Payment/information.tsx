@@ -1,4 +1,4 @@
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import DefaultLayout from "../../layouts/DefaultLayout";
 import Head from 'next/head';
 import BreadcrumbSection from "../../components/costum/BreadcrumbSection";
@@ -7,20 +7,24 @@ import {useFormik} from "formik";
 import * as Yup from 'yup';
 import Button from '../../components/common/Button';
 import TextArea from '../../components/common/TextArea';
-import {alterAddAddress, AuthSliceType} from "../../redux/slices/AuthenticationSlice";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {useRouter} from "next/router";
-import axios, {AxiosResponse} from "axios";
-import {toast} from "react-toastify";
-import {AppDispatch, RootState} from "../../redux/store";
-import {saveAddress, saveOrderSendTime, saveProducts} from "../../redux/slices/OrderSlice";
-
+import {RootState} from "../../redux/store";
+import {checkLogin, submitUserInformation} from "../../utilities/functions/ApiCall/login";
+import {submitPendingOrder} from "../../utilities/functions/ApiCall/order";
+import {getAllAddresses, submitAddress} from "../../utilities/functions/ApiCall/address";
+import {useCookies} from "react-cookie";
+import {ISuccessAddress} from "../../interfaces/address";
+import compactProductsForApi from "../../utilities/functions/compactProductsForApi";
+import {singleProductOrder} from "../../interfaces/order";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 interface formValues {
     firstName: string,
     lastName: string,
     address: string,
-    postalNumber: number | undefined,
+    sendOrderTime: string,
     phoneNumber: string | number
 }
 
@@ -40,126 +44,145 @@ const InformationSchema = Yup.object().shape({
         .min(11, 'تلفن‌همراه معتبر نیست')
         .max(13, 'تلفن‌همراه معتبر نیست')
         .required('تلفن‌همراه ضروری است'),
-    postalNumber: Yup.number()
-        .typeError('کدپستی معتبر نیست')
-        .min(1000000000, 'کدپستی معتبر نیست')
-        .max(9999999999, 'کدپستی معتبر نیست')
-        .required('کدپستی ضروری است')
+    sendOrderTime: Yup.date()
+        .typeError('زمان‌تحویل معتبر نیست')
+        .min(new Date((new Date()).setDate((new Date()).getDate() + 3)), 'حداقل 3 روز است')
+        .max(new Date((new Date()).setDate((new Date()).getDate() + 10)), 'حداکثر 10 روز است')
+        .required('زمان‌تحویل ضروری است')
 });
 
+const initialFormValues: formValues = {
+    firstName: '',
+    lastName: '',
+    address: '',
+    phoneNumber: '',
+    sendOrderTime: ''
+}
+
+const initialOrder = {
+    address: 0 as number,
+    coupon: null as (string | null),
+    data: '' as any,
+    status: 'pending' as string,
+    products: [] as singleProductOrder[],
+}
 
 const PaymentInformation = () => {
     const router = useRouter();
-    const {products: basketProducts, countSum} = useSelector((state: RootState) => state.BasketSlice)
+    const {products: basketProducts, countSum} = useSelector((state: RootState) => state.BasketSlice);
+    const [order, setOrder] = useState<any>(initialOrder)
+    const [cookies] = useCookies(['token']);
+    const [rememberMeCookie] = useCookies<string>(['rememberMe']);
+    const [initialFormikValues, setInitialFormikValues] = useState<formValues>(initialFormValues)
+
     useLayoutEffect(() => {
         if (countSum === 0)
-            router.replace({pathname: '/404'}, '/Payment/information');
-        dispatch(saveProducts(basketProducts));
-    }, [])
+            router.replace('/404', '/Payment/information');
+        setOrder((pre: any) => ({
+            ...pre,
+            products: compactProductsForApi(basketProducts)
+        }))
+        checkLogin(cookies.token)
+            .then(([isLogin, response]) => {
+                if (isLogin) {
+                    if (rememberMeCookie.rememberMe === 'true') {
+                        setInitialFormikValues({
+                            ...initialFormikValues,
+                            firstName: response.first_name || '',
+                            lastName: response.last_name || '',
+                            phoneNumber: response.phone || ''
+                        });
+                    }
+                } else {
+                    router.replace({pathname: '/Login', query: {next: '/Payment/information'}}, '/Login')
+                }
+            })
 
-    const dispatch: AppDispatch = useDispatch();
-    const {
-        logStatus,
-        token,
-        username,
-        remember,
-        first_name,
-        last_name,
-        phone,
-        address
-    }: AuthSliceType = useSelector((state: any) => state.AuthenticationSlice);
-    const {currentOrder} = useSelector((state: RootState) => state.OrderSlice)
-    useLayoutEffect(() => {
-        if (logStatus === 'notLog')
-            router.replace({pathname: '/Login', query: {next: '/Payment/information'}}, '/Login')
-    }, [])
+    }, []);
+
     const formik = useFormik({
-        initialValues: {
-            firstName: remember ? first_name || '' : '',
-            lastName: remember ? last_name || '' : '',
-            address: remember ? address || '' : '',
-            postalNumber: undefined,
-            phoneNumber: remember ? phone || '' : ''
-        } as formValues,
+        initialValues: initialFormikValues,
+        enableReinitialize: true,
         validationSchema: InformationSchema,
         onSubmit: values => {
-            dispatch(saveOrderSendTime(new Date))
-            sendAddressData({
-                name: Date.now().toString(),
-                phone: values.postalNumber,
-                address: values.address
-            })
-            sendData({
-                firstName: values.firstName,
-                lastName: values.lastName,
-                phone: values.phoneNumber,
-            })
+            setOrder((pre: any) => ({
+                ...pre,
+                data: {
+                    saveOrderSendTime: (new Date(values.sendOrderTime).toISOString())
+                }
+            }))
+            submitProcess(values)
         },
     });
 
-    const sendAddressData = useCallback(async (values: any) => {
-        const response = await axios({
-            method: 'post',
-            url: 'http://localhost:8000/store/address/',
-            headers: {
-                'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(values)
-        }).then(response => response.data)
-            .then(result => result)
-            .catch(error => error);
-        dispatch(alterAddAddress({id: response.id, address: values.address, postalNumber: values.phone}))
-        dispatch(saveAddress(response.id))
+    const sendOrder = useCallback(() => {
+        submitPendingOrder(cookies.token, order)
+            .then(([status, response]) => {
+                if (status)
+                    router.push({pathname: '/Payment/PayPal', query: {order: response.id}})
+                else
+                    toast('failed order')
+            })
+
+    }, [cookies.token, order, router])
+
+    const sendData = useCallback(() => {
+        submitUserInformation(cookies.token, {
+            firstName: formik.values.firstName,
+            lastName: formik.values.lastName,
+            phone: formik.values.phoneNumber,
+        }).then(([status,]) => {
+            if (status) {
+                sendOrder();
+            } else {
+                toast("failed information")
+                formik.resetForm()
+            }
+        })
+    }, [cookies.token, formik, sendOrder])
+
+    const sendAddressData = useCallback((values: any) => {
+        getAllAddresses(cookies.token)
+            .then((addresses) => {
+                let addressId: number;
+                const index: number = addresses.findIndex((item: ISuccessAddress) => item.address === values.address && item.phone === values.phone)
+                if (index === -1) {
+                    submitAddress(cookies.token, values)
+                        .then((response) => {
+                            addressId = response.id
+                            setOrder((pre: any) => ({
+                                ...pre,
+                                address: addressId
+                            }))
+                        })
+                } else {
+                    addressId = addresses[index].id;
+                    setOrder((pre: any) => ({
+                        ...pre,
+                        address: addressId
+                    }))
+                }
+            })
     }, [])
 
-    const sendData = useCallback(async (values: any) => {
-        let status: any = ''
-        const response: Promise<AxiosResponse<any>> = await axios({
-            method: "put",
-            url: 'http://localhost:8000/user/change_user_info/',
-            headers: {
-                'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(values)
+    useEffect(() => {
+        if (order.address !== 0)
+            sendData();
+    }, [order])
+
+    const submitProcess = useCallback((values: formValues) => {
+        sendAddressData({
+            name: Date.now().toString(),
+            phone: values.phoneNumber,
+            address: values.address
         })
-            .then(response => {
-                status = response.status;
-                return response.data
-            })
-            .then(result => result)
-            .catch(error => error);
-        console.log(response)
-
-        if (status === 200) {
-            //dispatch save information
-            sendOrder();
-        } else {
-            toast("failed login");
-            formik.resetForm()
-        }
-    }, [dispatch])
-
-    const sendOrder = useCallback(async () => {
-        const response = await axios({
-            method: 'post',
-            url: 'http://localhost:8000/store/order',
-            headers: {
-                'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(currentOrder)
-        }).then(res => res.data)
-            .catch(error => error);
-        console.log(response);
     }, [])
 
     return (
-        username &&
+        cookies.token &&
         <DefaultLayout>
             <div className='bg-secondary flex items-center justify-center w-full flex-col pb-16'>
-                <Head><title>تکمیل خرید</title></Head>
+                <Head><title>تکمیل اطلاعات خرید</title></Head>
                 <BreadcrumbSection options={[]}/>
                 <form onSubmit={formik.handleSubmit}
                       className='bg-weef-black border-[1px] border-primary-red flex flex-col z-20 px-4 py-6 gap-3 w-[560px] rounded-lg'>
@@ -167,6 +190,7 @@ const PaymentInformation = () => {
                         <label htmlFor="firstName" className='w-fit self-start text-weef-white'>نام:</label>
                         <div className='w-full flex justify-end'>
                             <Input
+                                type='text'
                                 className='placeholder:text-right'
                                 id='firstName' name='firstName'
                                 about={formik.errors.firstName}
@@ -179,6 +203,7 @@ const PaymentInformation = () => {
                         <label htmlFor="lastName" className='w-fit self-start text-weef-white'>نام‌خانوادگی:</label>
                         <div className='w-full flex justify-end'>
                             <Input
+                                type='text'
                                 className='placeholder:text-right'
                                 id='lastName' name='lastName'
                                 about={formik.errors.lastName}
@@ -200,21 +225,23 @@ const PaymentInformation = () => {
                         </div>
                     </div>
                     <div className='flex flex-col px-4 gap-1'>
-                        <label htmlFor="postalNumber" className='w-fit self-start text-weef-white'>کد پستی:</label>
+                        <label htmlFor="sendOrderTime" className='w-fit self-start text-weef-white'>زمان‌تحویل:</label>
                         <div className='w-full flex justify-end'>
                             <Input
-                                className='placeholder:text-right'
-                                id='postalNumber' name='postalNumber'
-                                about={formik.errors.postalNumber}
+                                type="date"
+                                className='placeholder:text-right text-center'
+                                id='sendOrderTime' name='sendOrderTime'
+                                about={formik.errors.sendOrderTime}
                                 onChange={formik.handleChange}
-                                value={formik.values.postalNumber}
-                                placeholder='کد پستی'/>
+                                value={formik.values.sendOrderTime}
+                                placeholder='زمان‌تحویل'/>
                         </div>
                     </div>
                     <div className='flex flex-col px-4 gap-1'>
                         <label htmlFor="phoneNumber" className='w-fit self-start text-weef-white'>تلفن‌همراه:</label>
                         <div className='w-full flex justify-end'>
                             <Input
+                                type='text'
                                 className='placeholder:text-right'
                                 id='phoneNumber' name='phoneNumber'
                                 about={formik.errors.phoneNumber}
@@ -227,6 +254,7 @@ const PaymentInformation = () => {
                         <Button type='submit' size='medium'>انتقال به صفحه پرداخت</Button>
                     </div>
                 </form>
+                <ToastContainer/>
             </div>
         </DefaultLayout>
     );

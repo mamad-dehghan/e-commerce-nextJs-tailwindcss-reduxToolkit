@@ -1,7 +1,7 @@
 // url : localhost:8000/store/order
 // token required
 
-type singleProductOrder = {
+export type singleProductOrder = {
     id: number,
     data: {
         size?: string,
@@ -21,7 +21,7 @@ export interface ISuccessOrder {
     total: number,
     created: string,
     status: string,
-    data: null,
+    data: any,
     user: number,
     coupon: string | null,
     address: number
