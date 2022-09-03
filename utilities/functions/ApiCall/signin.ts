@@ -1,7 +1,14 @@
 import axios from "axios";
 
 export const trySignIn = (values: any) => {
-    return axios.post('http://localhost:8000/user/register/', JSON.stringify(values))
+    return axios({
+        url: 'http://localhost:8000/user/register/',
+        method: "post",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(values)
+    })
         .then(res => res.status === 200)
-        .catch(error => error)
+        .catch(error => false)
 }
