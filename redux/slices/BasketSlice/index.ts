@@ -22,12 +22,20 @@ export type singleProductType = {
 export type BasketSlice = {
     products: singleProductType[],
     countSum: number,
-    finalSum: number
+    finalSum: number,
+    coupon: {
+        "code": string,
+        "discount": number,
+        "discount_type": "percent" | "absolute",
+    } | undefined,
+    discount:number
 }
 const initialState: BasketSlice = {
     products: [],
     countSum: 0,
-    finalSum: 0
+    finalSum: 0,
+    coupon: undefined,
+    discount:0
 }
 
 const BasketSlice = createSlice({
@@ -35,7 +43,6 @@ const BasketSlice = createSlice({
     initialState,
     reducers: {
         addProduct: (state, action) => {
-            console.log('add')
             const index: number = state.products.findIndex(item => item.product.id === action.payload.product.id);
             if (index === -1) {
                 state.products = [...state.products, {
@@ -52,11 +59,8 @@ const BasketSlice = createSlice({
             state.countSum += 1;
         },
         removeProduct: (state, action) => {
-            console.log('remove')
             const index: number = state.products.findIndex(item => item.product.id === action.payload.id);
-            if (index === -1) {
-                return state;
-            } else {
+            if (index !== -1) {
                 const temp = state.products[index];
                 if (temp.count === 1) {
                     state.products.splice(index, 1);
@@ -70,9 +74,7 @@ const BasketSlice = createSlice({
         },
         removeAllSingleProduct: (state, action) => {
             const index: number = state.products.findIndex(item => item.product.id === action.payload.id);
-            if (index === -1) {
-                return state;
-            } else {
+            if (index !== -1) {
                 const temp = state.products[index];
                 state.products.splice(index, 1);
                 state.finalSum -= parse3digitNumber(action.payload.final_price) * temp.count;
@@ -84,16 +86,24 @@ const BasketSlice = createSlice({
         },
         changeProductColor: (state, action) => {
             const index = state.products.findIndex(item => item.product.id === action.payload.id);
-            if (index === -1)
-                return state;
-            state.products[index].attribute.color = action.payload.color;
+            if (index !== -1)
+                state.products[index].attribute.color = action.payload.color;
         },
         changeProductSize: (state, action) => {
             const index = state.products.findIndex(item => item.product.id === action.payload.id);
-            if (index === -1)
-                return state;
-            state.products[index].attribute.size = action.payload.size;
-        }
+            if (index !== -1)
+                state.products[index].attribute.size = action.payload.size;
+        },
+        setCoupon: (state, action) => {
+            state.coupon = {
+                code: action.payload.code,
+                discount: parseInt(action.payload.discount),
+                discount_type: action.payload.discount_type
+            }
+        },
+        removeCoupon: (state) => {
+            state.coupon = undefined;
+        },
     }
 })
 
@@ -104,5 +114,7 @@ export const {
     removeAllSingleProduct,
     clearBasket,
     changeProductColor,
-    changeProductSize
+    changeProductSize,
+    setCoupon,
+    removeCoupon
 } = BasketSlice.actions;
