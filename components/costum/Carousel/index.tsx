@@ -1,6 +1,6 @@
 import React from 'react';
 import {Swiper, SwiperSlide} from "swiper/react";
-import {Autoplay, } from "swiper";
+import {Autoplay} from "swiper";
 
 const Carousel=()=> {
     return (
@@ -16,8 +16,6 @@ const Carousel=()=> {
                 slidesPerView={2}
                 style={{
                     width:"100%",
-                    // maxWidth:"90rem",
-                    // background:"limegreen",
                     padding:"7% 0"
                 }}
             >
