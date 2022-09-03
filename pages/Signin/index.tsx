@@ -10,8 +10,7 @@ import * as Yup from 'yup';
 import {router} from "next/client";
 import {useCookies} from "react-cookie";
 import {trySignIn} from "../../utilities/functions/ApiCall/signin";
-import {toast, ToastContainer} from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import {toast} from "react-toastify";
 
 interface formValues {
     userName: string,
@@ -61,11 +60,13 @@ const SignIn = () => {
     const sendData = useCallback((values: any) => {
         trySignIn(values)
             .then(isValid => {
+                console.log(isValid)
                 if (isValid) {
+                    toast.success("ثبت‌نام با موفقیت انجام شد");
                     setRememberMeCookie('rememberMe', rememberMe, {path: '/'});
                     router.back()
                 } else {
-                    toast("username already exists");
+                    toast.error("این نام‌کاربری قبلا انتخاب شده");
                     formik.resetForm({values: {...values, password: '', confirmPassword: ''}})
                 }
             })
@@ -90,6 +91,7 @@ const SignIn = () => {
                     <label htmlFor="userName" className='text-weef-white'>نام کاربری:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
                             id='userName' name='userName'
@@ -103,6 +105,7 @@ const SignIn = () => {
                     <label htmlFor="email" className='text-weef-white'>ایمیل:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
                             id='email' name='email'
@@ -116,6 +119,7 @@ const SignIn = () => {
                     <label htmlFor="password" className='text-weef-white'>رمز ورود:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             disabled={formik.isSubmitting}
                             type='password'
                             className='placeholder:text-right'
@@ -130,6 +134,7 @@ const SignIn = () => {
                     <label htmlFor="confirmPassword" className='text-weef-white'>تکرار رمز ورود:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             disabled={formik.isSubmitting}
                             type='password'
                             className='placeholder:text-right'
@@ -159,7 +164,6 @@ const SignIn = () => {
                     </Link>
                 </div>
             </form>
-            <ToastContainer/>
         </div>
     );
 }

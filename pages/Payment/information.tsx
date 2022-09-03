@@ -12,13 +12,11 @@ import {useRouter} from "next/router";
 import {RootState} from "../../redux/store";
 import {checkLogin, submitUserInformation} from "../../utilities/functions/ApiCall/login";
 import {submitPendingOrder} from "../../utilities/functions/ApiCall/order";
-import {getAllAddresses, submitAddress} from "../../utilities/functions/ApiCall/address";
+import {findOrCreateAddress} from "../../utilities/functions/ApiCall/address";
 import {useCookies} from "react-cookie";
-import {ISuccessAddress} from "../../interfaces/address";
 import compactProductsForApi from "../../utilities/functions/compactProductsForApi";
 import {singleProductOrder} from "../../interfaces/order";
-import {toast, ToastContainer} from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import {toast} from "react-toastify";
 
 interface formValues {
     firstName: string,
@@ -40,7 +38,7 @@ const InformationSchema = Yup.object().shape({
     address: Yup.string()
         .required('آدرس ضروری است'),
     phoneNumber: Yup.string()
-        .matches(/^[+0123456789]+$/, 'تلفن‌همراه معتبر نیست')
+        ?.matches(/^[+0123456789]+$/, 'تلفن‌همراه معتبر نیست')
         .min(11, 'تلفن‌همراه معتبر نیست')
         .max(13, 'تلفن‌همراه معتبر نیست')
         .required('تلفن‌همراه ضروری است'),
@@ -69,7 +67,7 @@ const initialOrder = {
 
 const PaymentInformation = () => {
     const router = useRouter();
-    const {products: basketProducts, countSum} = useSelector((state: RootState) => state.BasketSlice);
+    const {products: basketProducts, countSum, coupon} = useSelector((state: RootState) => state.BasketSlice);
     const [order, setOrder] = useState<any>(initialOrder)
     const [cookies] = useCookies(['token']);
     const [rememberMeCookie] = useCookies<string>(['rememberMe']);
@@ -80,6 +78,7 @@ const PaymentInformation = () => {
             router.replace('/404', '/Payment/information');
         setOrder((pre: any) => ({
             ...pre,
+            coupon: coupon ? coupon.code : null,
             products: compactProductsForApi(basketProducts)
         }))
         checkLogin(cookies.token)
@@ -94,7 +93,7 @@ const PaymentInformation = () => {
                         });
                     }
                 } else {
-                    router.replace({pathname: '/Login', query: {next: '/Payment/information'}}, '/Login')
+                    router.replace({pathname: '/Login', query: {next: '/Payment/information'}})
                 }
             })
 
@@ -108,7 +107,7 @@ const PaymentInformation = () => {
             setOrder((pre: any) => ({
                 ...pre,
                 data: {
-                    saveOrderSendTime: (new Date(values.sendOrderTime).toISOString())
+                    sendOrderTime: (new Date(values.sendOrderTime).toISOString())
                 }
             }))
             submitProcess(values)
@@ -142,26 +141,15 @@ const PaymentInformation = () => {
     }, [cookies.token, formik, sendOrder])
 
     const sendAddressData = useCallback((values: any) => {
-        getAllAddresses(cookies.token)
-            .then((addresses) => {
-                let addressId: number;
-                const index: number = addresses.findIndex((item: ISuccessAddress) => item.address === values.address && item.phone === values.phone)
-                if (index === -1) {
-                    submitAddress(cookies.token, values)
-                        .then((response) => {
-                            addressId = response.id
-                            setOrder((pre: any) => ({
-                                ...pre,
-                                address: addressId
-                            }))
-                        })
-                } else {
-                    addressId = addresses[index].id;
+        findOrCreateAddress(cookies.token, values)
+            .then(([status, addressID]: any) => {
+                if (status)
                     setOrder((pre: any) => ({
                         ...pre,
-                        address: addressId
+                        address: addressID
                     }))
-                }
+                else
+                    toast.error('address')
             })
     }, [])
 
@@ -190,6 +178,7 @@ const PaymentInformation = () => {
                         <label htmlFor="firstName" className='w-fit self-start text-weef-white'>نام:</label>
                         <div className='w-full flex justify-end'>
                             <Input
+                                widthOnPercent={65}
                                 type='text'
                                 className='placeholder:text-right'
                                 id='firstName' name='firstName'
@@ -203,6 +192,7 @@ const PaymentInformation = () => {
                         <label htmlFor="lastName" className='w-fit self-start text-weef-white'>نام‌خانوادگی:</label>
                         <div className='w-full flex justify-end'>
                             <Input
+                                widthOnPercent={65}
                                 type='text'
                                 className='placeholder:text-right'
                                 id='lastName' name='lastName'
@@ -216,6 +206,7 @@ const PaymentInformation = () => {
                         <label htmlFor="address" className='w-fit self-start text-weef-white'>آدرس:</label>
                         <div className='w-full flex justify-end'>
                             <TextArea
+                                widthOnPercent={65}
                                 className='placeholder:text-right'
                                 id='address' name='address'
                                 about={formik.errors.address}
@@ -228,6 +219,7 @@ const PaymentInformation = () => {
                         <label htmlFor="sendOrderTime" className='w-fit self-start text-weef-white'>زمان‌تحویل:</label>
                         <div className='w-full flex justify-end'>
                             <Input
+                                widthOnPercent={65}
                                 type="date"
                                 className='placeholder:text-right text-center'
                                 id='sendOrderTime' name='sendOrderTime'
@@ -241,6 +233,7 @@ const PaymentInformation = () => {
                         <label htmlFor="phoneNumber" className='w-fit self-start text-weef-white'>تلفن‌همراه:</label>
                         <div className='w-full flex justify-end'>
                             <Input
+                                widthOnPercent={65}
                                 type='text'
                                 className='placeholder:text-right'
                                 id='phoneNumber' name='phoneNumber'
@@ -251,10 +244,9 @@ const PaymentInformation = () => {
                         </div>
                     </div>
                     <div className='w-fit self-end pt-2 px-4'>
-                        <Button type='submit' size='medium'>انتقال به صفحه پرداخت</Button>
+                        <Button disable={!formik.isValid} type='submit' size='medium'>انتقال به صفحه پرداخت</Button>
                     </div>
                 </form>
-                <ToastContainer/>
             </div>
         </DefaultLayout>
     );

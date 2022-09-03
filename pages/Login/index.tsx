@@ -10,8 +10,7 @@ import * as Yup from 'yup';
 import {useRouter} from "next/router";
 import {checkLogin, tryToLogin} from "../../utilities/functions/ApiCall/login";
 import {useCookies} from "react-cookie";
-import {ToastContainer, toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {toast} from 'react-toastify';
 
 type formValuesType = {
     username: string,
@@ -40,7 +39,7 @@ const Login = () => {
         if (rememberMeCookie.rememberMe) {
             checkLogin(cookies.token)
                 .then((res) => {
-                    const [status, response]:any = res;
+                    const [status, response]: any = res;
                     if (status)
                         setInitialFormValues({
                             username: response.username,
@@ -62,6 +61,7 @@ const Login = () => {
             tryToLogin(values)
                 .then(([status, response]) => {
                     if (status === 200) {
+                        toast.success("ورود با موفقیت");
                         setCookie('token', response.token, {path: '/'});
                         if (router.query.next !== undefined)
                             router.replace(`${router.query.next}`);
@@ -69,7 +69,7 @@ const Login = () => {
                             router.push('/Dashboard');
                     } else {
                         removeCookie("token");
-                        toast("کاربری با این مشخصات یافت نشد");
+                        toast.error("کاربری با این مشخصات یافت نشد");
                         formik.resetForm();
                     }
                 })
@@ -95,6 +95,7 @@ const Login = () => {
                     <label htmlFor="username" className='text-weef-white'>نام کاربری:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             type='text'
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
@@ -109,6 +110,7 @@ const Login = () => {
                     <label htmlFor="password" className='text-weef-white'>رمز ورود:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             type='password'
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
@@ -128,21 +130,17 @@ const Login = () => {
                            name="rememberMe" id="rememberMe"/>
                 </div>
                 <div className='w-fit px-4 self-end'>
-                    <Button type='submit' size='medium'>ورود</Button>
+                    <Button disable={!formik.isValid} type='submit' size='medium'>ورود</Button>
                 </div>
-                <div className='w-fit px-4'>
+                <div className='flex justify-between items-center w-full px-4 pt-2'>
                     <Link href='/Login/ResetPassword'>
                         <a className='link'>رمز خود را فراموش کرده‌ام</a>
                     </Link>
-                </div>
-                <div className='flex justify-between items-center w-full px-4 pt-2'>
-                    <span className='text-weef-white'>در حال حاضر حساب کاربری ندارم</span>
                     <Link href='/Signin'>
                         <a className='link'>ساخت حساب کاربری</a>
                     </Link>
                 </div>
             </form>
-            <ToastContainer/>
         </div>
     );
 }

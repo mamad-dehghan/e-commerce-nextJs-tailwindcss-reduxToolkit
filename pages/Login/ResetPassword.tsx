@@ -55,6 +55,7 @@ const ResetPassword = () => {
                     <label htmlFor="userName" className='text-weef-white'>نام کاربری:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
                             id='userName' name='userName'
@@ -68,6 +69,7 @@ const ResetPassword = () => {
                     <label htmlFor="phoneNumber" className='text-weef-white'>شماره تلفن:</label>
                     <div className='w-full flex justify-end'>
                         <Input
+                            widthOnPercent={68}
                             disabled={formik.isSubmitting}
                             className='placeholder:text-right'
                             id='phoneNumber' name='phoneNumber'
@@ -78,7 +80,7 @@ const ResetPassword = () => {
                     </div>
                 </div>
                 <div className='w-fit px-4 self-end'>
-                    <Button type='submit' size='medium'>ارسال کد بازیابی</Button>
+                    <Button disable={!formik.isValid} type='submit' size='medium'>ارسال کد بازیابی</Button>
                 </div>
                 <div className='w-fit px-4'>
                     <Link href='/Login'>
