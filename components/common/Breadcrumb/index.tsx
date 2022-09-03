@@ -49,4 +49,4 @@ const BreadCrumb = ({link, name, disable = false}: props) => {
     );
 }
 
-export default BreadCrumb;
+export default React.memo(BreadCrumb);
