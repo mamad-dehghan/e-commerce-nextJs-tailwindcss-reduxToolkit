@@ -4,7 +4,7 @@
 /**
  * response status => 200
  */
-export interface ISuccessEditUser {
+export interface ISuccessUser {
     id: number,
     last_login: null,
     is_superuser: boolean,
