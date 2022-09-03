@@ -42,7 +42,7 @@ const MultiButton = ({increaseCount, reduceCount, id}: props) => {
     }, [count])
 
     return (
-        <div dir='ltr' className='bg-primary rounded-[26px] h-14 w-40 p-[1px] cursor-default'>
+        <div dir='ltr' className='bg-primary rounded-[28px] h-14 w-40 p-[1px] cursor-default'>
             <div className='bg-secondary flex gap-1 items-center p-1 rounded-[26px] w-full h-full'>
                 <button
                     disabled={count <= 0}

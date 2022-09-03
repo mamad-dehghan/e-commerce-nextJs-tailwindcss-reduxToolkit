@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import ItemRow from "../ItemRow";
+import {Colors} from "../../../utilities/constants/colors";
 
 type props = {
     text: string,
@@ -9,8 +10,8 @@ type props = {
 
 const AlertItem = ({text, link}: props) => {
     return (
-        <div className='w-3/4 z-20'>
-            <ItemRow backgroundContent='#232227' backgroundContentOnHover='#232227'>
+        <div className='w-3/4 z-20 flex justify-center'>
+            <ItemRow backgroundContent={Colors._black} backgroundContentOnHover={Colors._black}>
                 <div className='z-10'>
                     {
                         link ?
@@ -26,4 +27,4 @@ const AlertItem = ({text, link}: props) => {
     );
 }
 
-export default AlertItem;
+export default React.memo(AlertItem);

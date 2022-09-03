@@ -12,4 +12,4 @@ const PaletteItem=({color}:props)=> {
     );
 }
 
-export default PaletteItem;
+export default React.memo(PaletteItem);

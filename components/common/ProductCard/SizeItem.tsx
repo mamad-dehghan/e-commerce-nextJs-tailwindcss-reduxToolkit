@@ -12,4 +12,4 @@ const SizeItem = ({size}: props) => {
     );
 }
 
-export default SizeItem;
+export default React.memo(SizeItem);

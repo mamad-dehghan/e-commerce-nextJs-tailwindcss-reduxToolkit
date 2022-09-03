@@ -68,7 +68,7 @@ const ProductCard = ({product}: props) => {
                 <div className={classNameTop}>
                     <span className='whitespace-nowrap'>سایزهای موجود:</span>
                     <div className={style.scrollHidden}>
-                        <div className='flex gap-2 items-center px-0.5'>
+                        <div dir='rtl' className='flex gap-2 items-center px-0.5 w-fit'>
                             {product.attributes.sizes.map(size => (
                                 <SizeItem size={size} key={size}/>
                             ))}
@@ -84,7 +84,7 @@ const ProductCard = ({product}: props) => {
                 className={classNameDetails}>
                 <div className='flex flex-col py-4 gap-6 px-2'>
                     <div>{product.name}</div>
-                    <div>{product.final_price}<span className='pr-2'>تومان</span></div>
+                    <div>{product.price}<span className='pr-2'>تومان</span></div>
                     <div>
                         <Button
                             onClick={handleAddToBasket}
@@ -103,4 +103,5 @@ const ProductCard = ({product}: props) => {
     );
 }
 
-export default ProductCard;
+// export default ProductCard;
+export default React.memo(ProductCard, (a, b) => a.product.id === b.product.id);
