@@ -11,24 +11,20 @@ type props = {
     options: option[]
 }
 
-function BreadcrumbSection({options}: props) {
+const BreadcrumbSection = ({options}: props) => {
     return (
-        <>
-            {
-                options !== [] ?
-                    <div className='Container'>
-                        <div
-                            className='h-20 pr-8 flex flex-row items-center justify-start gap-0.5 flex-nowrap overflow-x-auto scroll'>
-                            {
-                                options.map((item, index) => (
-                                    <BreadCrumb key={index} link={item.link} name={item.name} disable={item.disable}/>
-                                ))
-                            }
-                        </div>
-                    </div> :
-                    <></>
-            }
-        </>
+        options !== [] ?
+            <div className='Container'>
+                <div
+                    className='h-20 pr-8 flex flex-row items-center justify-start gap-0.5 flex-nowrap overflow-x-auto scroll'>
+                    {
+                        options.map((item, index) => (
+                            <BreadCrumb key={index} link={item.link} name={item.name} disable={item.disable}/>
+                        ))
+                    }
+                </div>
+            </div> :
+            <></>
     );
 }
 
