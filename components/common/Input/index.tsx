@@ -1,7 +1,10 @@
 import React, {InputHTMLAttributes, useEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
 
-const Input = ({className, about, ...props}: InputHTMLAttributes<HTMLInputElement>) => {
+interface props extends InputHTMLAttributes<HTMLInputElement> {
+    widthOnPercent: number
+}
+const Input = ({className, widthOnPercent, about, ...props}: props) => {
     const [errorMessage, setErrorMessage] = useState<string>('')
     useEffect(() => {
         if (about)
@@ -14,16 +17,16 @@ const Input = ({className, about, ...props}: InputHTMLAttributes<HTMLInputElemen
 
     const errorClassName = useMemo(() => {
         return classNames(
-            'absolute bg-primary-red h-full rounded-r w-[calc(100%-220px)] sm:w-[calc(100%-300px)] right-0 -z-10 top-0 flex items-center pr-1 pl-3 transition-transform ease-in-out duration-300 whitespace-nowrap',
-            about ? ' ring-[1px] ring-primary-red' : '-translate-x-[100%]'
+            'absolute bg-primary-red h-full rounded-md left-0 -z-10 top-0 flex items-center pr-1 pl-3 transition-transform ease-in-out duration-300 whitespace-nowrap',
+            about ? ' ring-[1px] ring-primary-red' : ''
         )
     }, [about]);
 
     const inputClassName = useMemo(() => {
         return classNames(
-            'bg-secondary text-weef-white ring-[1px] placeholder-weef-grey outline-0 focus:outline-0 text-base rounded-md focus:border-0 border-0 focus:ring-primary-red block w-[240px] sm:w-[320px] p-2 z-20',
-            className,
-            about ? 'ring-primary-red' : 'ring-secondary'
+            'bg-secondary text-weef-white ring-[1px] placeholder-weef-grey outline-0 focus:outline-0 text-base rounded-md focus:border-0 border-0 focus:ring-primary-red block p-2 z-20 resize-none',
+            about ? 'ring-primary-red' : 'ring-secondary',
+            className
         )
     }, [about, className]);
 
@@ -32,8 +35,15 @@ const Input = ({className, about, ...props}: InputHTMLAttributes<HTMLInputElemen
             <input
                 dir='auto'
                 className={inputClassName}
+                style={{
+                    width: `${widthOnPercent}%`
+                }}
                 {...props}/>
-            <div className={errorClassName}>
+            <div className={errorClassName}
+                 style={{
+                     width: `${widthOnPercent}%`,
+                     transform: about ? `translateX(${(100 - widthOnPercent) / widthOnPercent * 100}%)` : ''
+                 }}>
                 <div>{errorMessage}</div>
             </div>
         </div>
