@@ -12,7 +12,7 @@ const Option = ({option, toggle, initial}: props) => {
 
     const classLinks = useMemo(() => {
         return classNames(
-            'min-w-fit w-full  block rounded border border-primary-red h-full bg-secondary'
+            'min-w-fit w-full block rounded border border-primary-red h-full bg-secondary'
         )
     }, []);
 
