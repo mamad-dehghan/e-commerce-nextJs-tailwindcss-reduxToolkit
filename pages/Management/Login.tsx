@@ -9,8 +9,7 @@ import {useRouter} from "next/router";
 import Head from "next/head";
 import {useCookies} from "react-cookie";
 import {tryToLogin} from "../../utilities/functions/ApiCall/login";
-import {ToastContainer, toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {toast} from 'react-toastify';
 
 
 const LoginSchema = Yup.object().shape({
@@ -36,7 +35,7 @@ const ManagementLogin = () => {
     const formik = useFormik({
         initialValues,
         validationSchema: LoginSchema,
-        onSubmit: values => {
+        onSubmit: (values, { setSubmitting })  => {
             tryToLogin(values)
                 .then(([status, response]) => {
                     if (status === 200) {
@@ -45,14 +44,15 @@ const ManagementLogin = () => {
                             if (router.query.next !== undefined)
                                 router.replace(`${router.query.next}`);
                             else
-                                router.push('/Management');
+                                router.push('/Management/Products');
                         } else {
-                            toast("شما امکان ورود به این قسمت را ندارید");
+                            toast.error("شما امکان ورود به این قسمت را ندارید");
                         }
                     } else {
                         removeCookie("token");
-                        toast("کاربری با این مشخصات یافت نشد");
+                        toast.error("کاربری با این مشخصات یافت نشد");
                         formik.resetForm();
+                        setSubmitting(false)
                     }
                 })
         },
@@ -73,10 +73,11 @@ const ManagementLogin = () => {
                         <WeefIcon size='medium' background='transparent' fill='secondary'/>
                     </div>
                 </div>
-                <div className='flex flex-col px-4'>
+                <div className='flex flex-col px-4 gap-1'>
                     <label htmlFor="username" className='text-lg text-weef-white'>نام‌کاربری:</label>
-                    <div className='w-fit self-end'>
+                    <div className='w-full self-end'>
                         <Input
+                            widthOnPercent={68}
                             type='text'
                             disabled={formik.isSubmitting}
                             about={formik.errors.username}
@@ -86,10 +87,11 @@ const ManagementLogin = () => {
                             placeholder='username'/>
                     </div>
                 </div>
-                <div className='flex flex-col px-4'>
+                <div className='flex flex-col px-4 gap-1'>
                     <label htmlFor="password" className='text-lg text-weef-white'>رمز ورود:</label>
-                    <div className='w-fit self-end'>
+                    <div className='w-full self-end'>
                         <Input
+                            widthOnPercent={68}
                             type='password'
                             disabled={formik.isSubmitting}
                             about={formik.errors.password}
@@ -99,11 +101,10 @@ const ManagementLogin = () => {
                             placeholder='password'/>
                     </div>
                 </div>
-                <div className='w-fit px-4 self-end'>
-                    <Button type='submit' size='medium'>ورود</Button>
+                <div className='w-fit px-4 pt-2 self-end'>
+                    <Button disable={!formik.isValid} type='submit' size='medium'>ورود</Button>
                 </div>
             </form>
-            <ToastContainer/>
         </div>
     );
 }
