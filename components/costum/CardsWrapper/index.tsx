@@ -6,7 +6,15 @@ type props = {
     products: IProduct[]
 }
 
-function CardsWrapper({products}: props) {
+const reduceProducts = (products: IProduct[]) => {
+    return products.reduce((all, item) => all + '/' + item.id, '')
+}
+
+const checkChange = (pre: props, next: props) => {
+    return reduceProducts(pre.products) === reduceProducts(next.products)
+}
+
+const CardsWrapper = ({products}: props) => {
     return (
         <div className='flex flex-row w-full flex-wrap gap-4 items-center justify-center px-8'>
             {
@@ -19,4 +27,4 @@ function CardsWrapper({products}: props) {
     );
 }
 
-export default CardsWrapper;
+export default React.memo(CardsWrapper, checkChange);
