@@ -1,6 +1,5 @@
 type attributes = {
-    brand: string,
-    sizes?: string[] | number[],
+    sizes?: string[] ,
     colors?: string[],
     rating: number
 }
@@ -25,5 +24,5 @@ export default interface IProduct {
     remaining: number,
     created_at: string,
     category: number,
-    brand: null | string
+    brand: string
 }
