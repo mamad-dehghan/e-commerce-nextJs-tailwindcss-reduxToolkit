@@ -42,12 +42,12 @@ const Bill = () => {
                 {
                     order.status === 'payed' ?
                         <>
-                            <div className='flex pb-16'><Accept className='fill-green-600 w-32 h-32'/></div>
+                            <div className='flex pb-16 z-50'><Accept className='fill-green-600 w-32 h-32'/></div>
                             <AlertItem text='پرداخت با موفقیت انجام شد'/>
                             <AlertItem text={`کد رهگیری: ${order.data.trackingCode}`}/>
                         </> :
                         <>
-                            <div className='flex pb-16'><Reject className='fill-red-600 w-32 h-32'/></div>
+                            <div className='flex pb-16 z-50'><Reject className='fill-red-600 w-32 h-32'/></div>
                             <AlertItem text='پرداخت با شکست مواجه شد'/>
                             <AlertItem text={`کد رهگیری: ${order.data.trackingCode}`}/>
                             <AlertItem

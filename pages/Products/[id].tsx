@@ -12,6 +12,7 @@ import ICategory from "../../interfaces/category";
 import {useDispatch, useSelector} from "react-redux";
 import {addProduct, changeProductColor, changeProductSize, removeProduct} from "../../redux/slices/BasketSlice";
 import {useRouter} from "next/router";
+import {getAllBrandNames} from "../../utilities/functions/ApiCall/brand";
 
 
 type breadcrumbType = {
@@ -106,7 +107,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                             className='flex flex-col items-stretch justify-start self-stretch md:self-start grow gap-2 '>
                             <div className='flex flex-col px-8 py-4 gap-5 items-start justify-start'>
                                 <p className='w-full text-center md:w-fit text-weef-white text-[40px] font-medium'>
-                                    <span>{category?.name}</span> <span>{product.attributes.brand}</span></p>
+                                    <span>{category?.name}</span> <span>{product.brand}</span></p>
                                 <p className='w-full text-center md:w-fit text-weef-white text-2xl'>
                                     <span>مدل</span> {product.name}</p>
                             </div>
@@ -160,7 +161,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                                             <div className='flex items-center gap-2'>
                                                 <div
                                                     className='text-weef-white font-extralight'>{product.price}</div>
-                                                <div className='text-weef-white font-extralight'>ریال</div>
+                                                <div className='text-weef-white font-extralight'>تومان</div>
                                             </div>
                                         </div>
                                         <div
@@ -172,10 +173,12 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                                     </div>
                                     <div className='w-full gap-2 p-2 px-4 flex flex-col text-weef-white'>
                                         <div>مشخصات محصول:</div>
+                                        <p className='pl-24'>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</p>
                                         <p>{product.description}</p>
                                     </div>
                                     <div className='w-full flex flex-col gap-2 py-2 px-4 items-start text-weef-white'>
                                         <div>از دید کاریران:</div>
+                                        <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</p>
                                         <div>
                                             <span>امتیاز:</span><span>{product.attributes.rating}</span><span>star</span>
                                         </div>
@@ -266,6 +269,11 @@ export async function getServerSideProps(input: any) {
         .then((res: any) => res.data)
     similarProducts = similarProducts.filter(item => item.id != input.query.id);
 
+    const allBrands = await getAllBrandNames()
+
+    const getBrandNameById = (id:string) => {
+        return allBrands.find((item:any)=>item.id ===id)?.name || 'unknown'
+    }
 
     const categories: ICategory[] = await axios(`http://localhost:8000/store/category`)
         .then((res: any) => res.data)
@@ -295,6 +303,7 @@ export async function getServerSideProps(input: any) {
             product:
                 {
                     ...product,
+                    brand:getBrandNameById(product?.brand),
                     price: _3DigitSeparator(product?.price),
                     final_price: _3DigitSeparator(product?.final_price),
                     images: product.images ? [product.main_image, ...product.images] : [product.main_image]
