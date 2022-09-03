@@ -1,6 +1,9 @@
 import React, {SelectHTMLAttributes, useEffect, useMemo, useState} from 'react';
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
+import useComponentVisible from "../../../utilities/hooks/useOutsideDetector";
+import styles from "./style.module.scss";
+import {Colors} from "../../../utilities/constants/colors";
 
 type option = {
     value: string,
@@ -14,9 +17,9 @@ interface Interface extends SelectHTMLAttributes<HTMLSelectElement> {
     title: string
 }
 
-const Select = ({title, position, initialValue = undefined, options, onChange}: Interface) => {
-    const [open, setOpen] = useState<boolean>(false);
-    const [value, setValue] = useState<string>(initialValue || '');
+const Select = ({title, position, initialValue = '', options, onChange}: Interface) => {
+    const [value, setValue] = useState<string>(initialValue);
+    const {ref, open, setOpen} = useComponentVisible(false)
     const [event, setEvent] = useState<any>();
 
     useEffect(() => {
@@ -25,28 +28,28 @@ const Select = ({title, position, initialValue = undefined, options, onChange}: 
 
     const classSelect = useMemo(() => {
         return classNames(
-            "transition-all duration-300",
+            "transition-all duration-300 max-h-[280px] overflow-auto",
             position === 'absolute' ? (open ? 'flex' : 'hidden') : (open ? 'flex h-fit' : 'flex h-0 overflow-hidden'),
-            position === "absolute" ? 'bg-primary flex-col absolute justify-items-stretch p-[1px] pt-0  w-full translate-x-[1px] rounded-b top-[100%]'
+            position === "absolute" ? 'bg-primary flex-col absolute justify-items-stretch p-[1px] pt-0 w-full left-0 rounded-b top-[100%]'
                 : 'relative'
         )
     }, [position, open])
 
     const classLinks = useMemo(() => {
         return classNames(
-            'leading-loose whitespace-nowrap hover:bg-weef-black min-w-fit text-xl w-full py-1 px-4 block text-weef-white  no-underline cursor-pointer transition-all duration-300 bg-secondary  last:rounded-b'
+            'leading-loose whitespace-nowrap hover:bg-weef-black min-w-fit text-xl w-full py-1 px-4 block text-weef-white no-underline cursor-pointer transition-all duration-300 bg-secondary last:rounded-b'
         )
     }, []);
 
     const classContainer = useMemo(() => {
         return classNames(
-            'relative bg-primary h-fit overflow-y-visible flex flex-col w-[318px] justify-items-stretch cursor-pointer',
-            open ? 'p-[1px] rounded-t' : 'p-[1px] rounded',
+            'relative bg-primary h-fit overflow-y-visible flex flex-col w-[318px] justify-items-stretch cursor-pointer p-[1px]',
+            open ? 'rounded-t' : 'rounded',
             position === 'absolute' ? '' : 'rounded'
         )
     }, [open, position])
 
-    const Container = useMemo(() => {
+    const titleClass = useMemo(() => {
         return classNames(
             'bg-weef-black leading-loose whitespace-nowrap min-w-fit w-full px-4 py-[3px] block text-weef-white text-xl',
             open ? 'rounded-t' : 'rounded'
@@ -61,15 +64,15 @@ const Select = ({title, position, initialValue = undefined, options, onChange}: 
     }, [open])
 
     return (
-        <>
+        <div ref={ref}
+             dir='rtl'
+             className={classContainer}>
+            <span
+                onClick={() => setOpen(!open)}
+                className={titleClass}>{options?.find(item => item.value === value)?.text || title}</span>
             <div
-                dir='rtl'
-                className={classContainer}>
-                <span
-                    onClick={() => setOpen(open => !open)}
-                    className={Container}>{options?.find(item => item.value === value)?.text || title}</span>
-                <div
-                    className={classSelect}>
+                className={classSelect}>
+                <div className={styles.scrollHidden}>
                     <div
                         className={'bg-weef-black flex flex-col justify-items-stretch w-full transition-all duration-300 gap-0.5 rounded'}>
                         {
@@ -77,18 +80,18 @@ const Select = ({title, position, initialValue = undefined, options, onChange}: 
                                 <span
                                     key={option.value}
                                     onClick={(e) => {
+                                        setOpen(false);
                                         setEvent(e)
                                         setValue(option.value);
-                                        setOpen(false);
                                     }}
                                     className={classLinks}>{option.text}</span>
                             ))
                         }
                     </div>
                 </div>
-                <DownArrow color='#FAFAFA' className={arrowClassName}/>
             </div>
-        </>
+            <DownArrow color={Colors._white} className={arrowClassName}/>
+        </div>
     );
 }
 
