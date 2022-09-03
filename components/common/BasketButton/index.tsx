@@ -1,37 +1,28 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import BasketIcon from "../../../utilities/icons/BasketIcon";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../redux/store";
 
 const BasketButton = () => {
-    const {finalSum, countSum} = useSelector((state: RootState) => state.BasketSlice);
-    const [isActive, setActive] = useState<boolean>(false)
-    const [isActive2, setActive2] = useState<string>('')
-    const [preState, setPreState] = useState<number>(finalSum);
-
-    const basketIsEmpty = useMemo(() => {
-        setActive(pre => !pre);
-        return finalSum === 0;
-    }, [finalSum]);
+    const {countSum} = useSelector((state: RootState) => state.BasketSlice)
+    const [animationClass, setAnimationClass] = useState<string>('')
 
     useEffect(() => {
-        if (finalSum !== preState)
-            setActive2('animate-shake')
+        setAnimationClass('animate-shake')
         setTimeout(() => {
-            setActive2('')
+            setAnimationClass('')
         }, 400)
-        setPreState(finalSum)
-    }, [isActive])
+    }, [countSum])
 
     return (
         <div className='relative'>
-            <div className={isActive2}>
-                <BasketIcon isEmpty={basketIsEmpty}/>
+            <div className={animationClass}>
+                <BasketIcon isEmpty={countSum === 0}/>
             </div>
             {
-                !basketIsEmpty &&
+                !(countSum === 0) &&
                 <span
-                    className={`absolute top-0 right-0 bg-primary-red w-4 h-4 font-medium text-xs flex items-center justify-center rounded-full ${''}`}>{countSum}</span>
+                    className='absolute top-0 right-0 bg-primary-red w-4 h-4 font-medium text-xs flex items-center justify-center rounded-full'>{countSum}</span>
             }
         </div>
     );
