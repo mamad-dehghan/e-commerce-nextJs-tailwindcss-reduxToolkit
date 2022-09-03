@@ -7,6 +7,7 @@ import PaypalInput from "../../components/costum/PaypalInput";
 import {useDispatch} from "react-redux";
 import {clearBasket} from "../../redux/slices/BasketSlice";
 import Head from 'next/head';
+import {toast} from "react-toastify";
 
 
 const PayPal = () => {
@@ -17,24 +18,23 @@ const PayPal = () => {
     const dispatch = useDispatch();
 
     const check = useCallback(() => {
-        const orderId = parseInt(router.query.order as string)
+        const orderId = parseInt(router.asPath.slice(22))
         getAllOrders(cookies.token)
-            .then(response => {
-                const index: number = response.findIndex((item: ISuccessOrder) => item.id == orderId);
+            .then(async response => {
+                const index: number = await response.findIndex((item: ISuccessOrder) => item.id == orderId);
                 const currentOrder: ISuccessOrder | undefined = (index === -1) ? undefined : response[index];
 
                 if (currentOrder && currentOrder.status === 'pending') {
                     setOrder(currentOrder);
                     setAccess(true);
-                } else {
-                    router.replace('/404', '/Payment/PayPal')
-                }
+                } else
+                    await router.replace('/404', router.asPath)
             })
     }, [cookies.token, router.asPath, router.query.order])
 
     useLayoutEffect(() => {
         check()
-    }, [check, router.asPath])
+    }, [])
 
 
     const sendToNextPage = useCallback((trackingCode: number) => {
@@ -43,7 +43,7 @@ const PayPal = () => {
 
     const handlePay = useCallback(() => {
         submitOrder(cookies.token, {
-            ...order,
+            id: order?.id,
             data: {
                 ...order?.data,
                 payOrderTime: new Date().toISOString(),
@@ -52,9 +52,11 @@ const PayPal = () => {
         }, orderSituationEnum.payed)
             .then(([status, response]) => {
                 if (status) {
+                    toast.success("پرداخت با موفقیت انجام شد")
                     dispatch(clearBasket())
                     sendToNextPage(response.data.trackingCode);
                 } else {
+                    toast.warning("در حال ارسال مجدد اطلاعات")
                     setTimeout(() => {
                         handlePay();
                     }, 5000)
@@ -64,7 +66,7 @@ const PayPal = () => {
 
     const handleCancel = useCallback(() => {
         submitOrder(cookies.token, {
-            ...order,
+            id: order?.id,
             data: {
                 ...order?.data,
                 trackingCode: order?.user + '' + Date.now()
@@ -72,9 +74,10 @@ const PayPal = () => {
         }, orderSituationEnum.canceled)
             .then(([status, response]) => {
                 if (status) {
-                    console.log(status, response)
+                    toast.success("پرداخت با شکست مواجه شد")
                     sendToNextPage(response.data.trackingCode);
                 } else {
+                    toast.warning("در حال ارسال مجدد اطلاعات")
                     setTimeout(() => {
                         handleCancel();
                     }, 5000)
@@ -87,9 +90,15 @@ const PayPal = () => {
         <div className='bg-weef-white min-h-screen w-full flex items-center justify-center'>
             <Head><title>صفحه پرداخت</title></Head>
             <div className='Container h-full'>
-                <div className='flex w-full min-h-full items-end'>
+                <div className='flex w-full min-h-full items-end justify-center'>
                     <div
                         className='h-full w-[40%] min-w-[25rem] bg-weef-white rounded-t-3xl shadow-2xl z-20 border border-weef-black flex flex-col gap-2 px-4 py-20'>
+                        <div key='price' className='w-full flex flex-col items-start gap-1'>
+                            <label className='text-xs font-medium w-fit text-gray-700' htmlFor='price'>مبلغ
+                                پرداختی</label>
+                            <input disabled={true} className='w-full rounded-lg border border-gray-400 p-1' type="text"
+                                   id='price' value={order?.total || ''} placeholder='price'/>
+                        </div>
                         <PaypalInput title='شماره‌کارت'/>
                         <div className='flex w-full gap-4'>
                             <PaypalInput title='CVV2'/>
