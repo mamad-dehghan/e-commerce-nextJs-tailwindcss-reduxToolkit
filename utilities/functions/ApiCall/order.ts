@@ -1,13 +1,12 @@
 import axios from "axios";
-import {singleProductOrder} from "../../../interfaces/order";
 
 export enum orderSituationEnum {
     payed = 'payed',
-    canceled = 'canceled'
+    canceled = 'canceled',
+    checked = 'checked'
 }
 
 export const submitPendingOrder = (token: string, currentOrder: any) => {
-    console.log(currentOrder)
     return axios({
         method: 'post',
         url: 'http://localhost:8000/store/order',
@@ -30,17 +29,7 @@ export const submitOrder = (token: string, order: any, situation: orderSituation
             'Content-Type': 'application/json'
         },
         data: JSON.stringify({
-            address: order.address,
-            coupon: order.coupon,
             data: order.data,
-            products: order.products.map((item: singleProductOrder) => {
-                return {
-                    id: item.id,
-                    quantity: item.quantity,
-                    product: item.product,
-                    data: item.data
-                }
-            }),
             status: situation
         })
     })

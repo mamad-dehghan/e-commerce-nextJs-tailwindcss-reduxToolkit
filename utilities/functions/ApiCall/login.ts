@@ -1,7 +1,6 @@
-import {tryLoginType} from "../../../redux/slices/AuthenticationSlice";
 import axios from "axios";
 
-export const tryToLogin = (values: tryLoginType) => {
+export const tryToLogin = (values: any) => {
     return axios.post(
         'http://localhost:8000/user/login/',
         values
