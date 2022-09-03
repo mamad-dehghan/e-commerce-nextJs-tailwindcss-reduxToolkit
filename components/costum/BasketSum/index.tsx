@@ -1,13 +1,14 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../redux/store";
 import _3DigitSeparator from "../../../utilities/functions/_3DigitSeparator";
 import {clearBasket} from "../../../redux/slices/BasketSlice";
 import {useRouter} from "next/router";
-import {toast, ToastContainer} from "react-toastify";
+import {toast} from "react-toastify";
+import RotatedButton from "../../common/RotatedButton";
 
 const BasketSum = () => {
-    const {finalSum, countSum} = useSelector((state: RootState) => state.BasketSlice)
+    const {finalSum, countSum, coupon} = useSelector((state: RootState) => state.BasketSlice)
     const dispatch = useDispatch();
     const router = useRouter();
 
@@ -16,36 +17,36 @@ const BasketSum = () => {
     }, [dispatch])
 
     const handleConfirm = useCallback(() => {
-        // ---- save basket on backend ???
         if (countSum !== 0)
             router.push('/Payment/information');
         else {
             toast.clearWaitingQueue();
-            toast('سبد خرید شما خالی است');
+            toast.error('سبد خرید شما خالی است');
         }
     }, [])
 
+    const calculateDiscount = useMemo(() => {
+        if (coupon) {
+            if (coupon.discount_type==='percent')
+                return finalSum * coupon.discount /100
+            else
+                return Math.min(coupon.discount, finalSum)
+        }
+        return 0
+    }, [coupon, finalSum])
+
     return (
         <div className='relative overflow-visible'>
-            <button onClick={handleClearBasket}
-                    title='حذف همه محصول ها'
-                    className='absolute bottom-0 left-0 -translate-x-[40px] translate-y-1/2 w-[68px] h-[68px] rotate-45 group from-primary-red to-primary-orange bg-gradient-to-tr p-[1px] flex items-center justify-center z-20'>
-                            <span
-                                className='w-full h-full bg-weef-black group-hover:bg-transparent flex items-center justify-center'>
-                                <span className='-rotate-45 text-weef-white group-hover:text-weef-black'>حذف</span>
-                            </span>
-            </button>
-            <button
-                onClick={handleConfirm}
-                className='absolute top-0 right-0 translate-x-[33px] -translate-y-1/2 w-[105px] h-[105px] rotate-45 group from-primary-red to-primary-orange bg-gradient-to-tr p-[1px] flex items-center justify-center z-20'>
-                            <span
-                                className='w-full h-full bg-weef-black group-hover:bg-transparent flex items-center justify-center overflow-hidden'>
-                                <span
-                                    className='-rotate-45 text-weef-white group-hover:text-weef-black whitespace-nowrap'>
-                                    نهایی کردن خرید
-                                </span>
-                            </span>
-            </button>
+            <RotatedButton onClick={handleClearBasket} title='حذف همه محصول ها'
+                           heightOnPx={96} background='linear'
+                           className='absolute top-full left-0 -translate-x-[40.5px] -translate-y-[50%]'>
+                <span>حذف</span>
+            </RotatedButton>
+            <RotatedButton onClick={handleConfirm}
+                           heightOnPx={148} background='linear'
+                           className='absolute top-0 right-0 translate-x-[33.5px] -translate-y-1/2'>
+                <span className='whitespace-nowrap'>نهایی کردن خرید</span>
+            </RotatedButton>
             <div
                 className='absolute top-1/2 left-1/2 bg-weef-secondary-light -translate-x-1/2 -translate-y-1/2 h-[110px] w-[520px] -skew-x-[45deg]'/>
             <div className='flex flex-row items-center justify-center h-[110px] w-[520px] text-weef-white pr-4 gap-4'>
@@ -56,12 +57,10 @@ const BasketSum = () => {
                         className='w-full h-full bg-weef-black flex items-center justify-center rounded-full'>x{countSum}</div>
                 </div>
                 <div className='text-xl z-10 flex justify-center gap-1 items-center'>
-                    <span>{_3DigitSeparator(finalSum.toString())}</span>
+                    <span>{_3DigitSeparator((finalSum-calculateDiscount).toString())}</span>
                     <span>تومان</span>
                 </div>
             </div>
-            <ToastContainer
-                toastClassName={"bg-secondary relative flex p-1 min-h-10 rounded-md justify-between overflow-hidden cursor-pointer"}/>
         </div>
     );
 }
