@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {TwoThumbInputRange} from "react-two-thumb-input-range"
 import classNames from "classnames";
 import DownArrow from "../../../utilities/icons/customs/downArrow";
+import {Colors} from "../../../utilities/constants/colors";
 
 type values = [number, number];
 
@@ -12,7 +13,7 @@ type props = {
     handleChange: Function
 }
 
-const Index = ({min, max, handleChange, initialValue = undefined}: props) => {
+const PriceRange = ({min, max, handleChange, initialValue = undefined}: props) => {
     const [open, setOpen] = useState<boolean>(false);
     const [value, setValue] = useState<[number, number]>(initialValue !== undefined ? initialValue : [max, min])
 
@@ -53,39 +54,39 @@ const Index = ({min, max, handleChange, initialValue = undefined}: props) => {
                      onClick={() => setOpen(open => !open)}
                      className={divClassName}>
                     <p className='bg-weef-black leading-loose whitespace-nowrap min-w-fit w-full py-[3px] block text-weef-white text-xl rounded'>قیمت</p>
-                    <DownArrow color='#FAFAFA' className={arrowClassName}/>
+                    <DownArrow color={Colors._white} className={arrowClassName}/>
                 </div>
                 <div className={className}>
                     <div className='translate-y-10'>
                         <TwoThumbInputRange
                             onChange={onValueChange}
-                            railColor='#232227'
+                            railColor={Colors._black}
                             thumbStyle={{
-                                background: '#232227',
+                                background: Colors._black,
                                 width: '20px',
                                 height: '20px',
-                                border: '1px solid #FF626D',
+                                border: `1px solid ${Colors._primary_red}`,
                                 borderRadius: '50%'
                             }}
                             thumbFocusStyle={{
-                                background: '#232227',
+                                background: Colors._black,
                                 width: '20px',
                                 height: '20px',
-                                border: '2px solid #FF626D',
+                                border: `2px solid ${Colors._primary_red}`,
                                 borderRadius: '50%',
                                 boxShadow: 'none'
                             }}
-                            trackColor={'#FCAD72'}
+                            trackColor={Colors._primary_orange}
                             inputStyle={{
                                 height: '10px',
                                 width: '17rem'
                             }}
                             values={value}
                             labelTextStyle={{
-                                color: '#FAFAFA',
+                                color: Colors._white,
                             }}
                             labelStyle={{
-                                backgroundColor: '#4C4C4C',
+                                backgroundColor: Colors._secondary_light,
                             }}
                             min={min}
                             max={max}/>
@@ -100,4 +101,4 @@ const Index = ({min, max, handleChange, initialValue = undefined}: props) => {
     );
 }
 
-export default Index;
+export default PriceRange;
