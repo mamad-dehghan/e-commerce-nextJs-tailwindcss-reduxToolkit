@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import Image from "next/image";
 import Button from "../Button";
 import classNames from "classnames";
@@ -48,15 +48,15 @@ const ProductCard = ({product}: props) => {
         )
     }, [hover, product.attributes.colors]);
 
-    const handleAddToBasket = (e: any) => {
+    const handleAddToBasket =useCallback ((e: any) => {
         e.stopPropagation();
         dispatch(addProduct({
             product,
             size: product.attributes.sizes ? product.attributes.sizes[0] : undefined,
             color: product.attributes.colors ? product.attributes.colors[0] : undefined
         }));
-    }
-
+    },[dispatch, product])
+    console.log('ProductCard')
     return (
         <div
             onClick={() => router.push(`/Products/${product.id}`, undefined, {scroll: true})}
@@ -84,7 +84,7 @@ const ProductCard = ({product}: props) => {
                 className={classNameDetails}>
                 <div className='flex flex-col py-4 gap-6 px-2'>
                     <div>{product.name}</div>
-                    <div>{product.price}<span className='pr-2'>تومان</span></div>
+                    <div>{product.final_price}<span className='pr-2'>تومان</span></div>
                     <div>
                         <Button
                             onClick={handleAddToBasket}
