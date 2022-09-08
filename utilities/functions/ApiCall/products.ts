@@ -10,15 +10,11 @@ export const getAllProducts = () => {
 }
 
 export const editProductDetails = (token: string, information: any, id: number) => {
-    console.log(information)
     return findCategoryIdByName(information.category)
         .then(([status, categoryId]) => {
-            console.log(categoryId)
-            console.log('categoryId')
             if (status) {
                 return findOrCreateBrand(token, information.brand)
                     .then(brandId => {
-                        console.log(brandId)
                         return axios({
                             method: 'put',
                             url: `http://localhost:8000/store/product/id/${id}`,

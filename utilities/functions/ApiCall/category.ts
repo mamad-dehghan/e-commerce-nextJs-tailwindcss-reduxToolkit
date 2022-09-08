@@ -18,8 +18,6 @@ export const findCategoryIdByName = (name: string) => {
         .then(async ([status, res]) => {
             if (status) {
                 const findCategory = await res.find((item: ICategory) => item.name === name)
-                console.log(res)
-                console.log(findCategory)
                 if (findCategory)
                     return [true, findCategory.id]
             }

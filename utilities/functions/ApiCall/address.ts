@@ -30,7 +30,6 @@ export const getAllAddresses = (token: string) => {
 export const getSpecificAddress = (token: string, addressId: number) => {
     return getAllAddresses(token)
         .then(response => {
-            console.log(response)
             return response.find((item: ISuccessAddress) => item.id === addressId)
         })
 }
