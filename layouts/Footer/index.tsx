@@ -12,7 +12,7 @@ const Footer = () => {
         <div className='w-full bg-secondary flex border-t border-t-weef-black'>
             <div className='Container grow flex flex-col items-stretch justify-start px-8'>
                 <div className='py-4'>
-                    <p className='text-weef-white text-right font-extralight text-sm px-4'>مجموعه ویف همواره در نظر داشته تا
+                    <p className='text-weef-white text-center font-extralight text-sm px-4'>مجموعه ویف همواره در نظر داشته تا
                         با کیفیت‌ترین کالاهای حوزه مربوط به خود را از بهترین برندهای ایرانی و خارجی، در اختیار مشتریان
                         خود قرار دهد.</p>
                 </div>
