@@ -18,9 +18,9 @@ const Dashboard = () => {
                     setUserInformation(response)
             })
     }, [])
-
+    console.log('Dashboard')
     return (
-        <DefaultLayout>
+        <>
             <div className='flex flex-col w-full grow'>
                 <Head><title>Dashboard</title></Head>
                 {
@@ -76,8 +76,16 @@ const Dashboard = () => {
                         </div>
                 }
             </div>
-        </DefaultLayout>
+        </>
     );
+}
+
+Dashboard.getLayout = function getLayout(page: any) {
+    return (
+        <DefaultLayout>
+            {page}
+        </DefaultLayout>
+    )
 }
 
 export default Dashboard;

@@ -5,26 +5,28 @@ import type {AppProps} from 'next/app'
 import {Provider} from "react-redux";
 import {persist, store} from "../redux/store";
 import {PersistGate} from "redux-persist/integration/react";
-import {useRouter} from 'next/router';
-import {useMemo} from "react";
+import {ReactElement, ReactNode} from "react";
 import {CookiesProvider} from "react-cookie";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {NextPage} from "next";
 
-function MyApp({Component, pageProps}: AppProps) {
-    const router = useRouter()
-    const key = useMemo(() => {
-        if (router.query.SubCategory)
-            return router.query.SubCategory
 
-        return router.asPath
-    }, [router.asPath])
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+    getLayout?: (page: ReactElement) => ReactNode
+}
 
+type AppPropsWithLayout = AppProps & {
+    Component: NextPageWithLayout
+}
+
+function MyApp({Component, pageProps}: AppPropsWithLayout) {
+    const getLayout = Component.getLayout ?? ((page) => page)
     return (
         <CookiesProvider>
             <Provider store={store}>
                 <PersistGate persistor={persist}>
-                    <Component key={key} {...pageProps} />
+                    {getLayout(<Component {...pageProps} />)}
                     <ToastContainer theme="dark"
                                     position="bottom-right"
                                     hideProgressBar

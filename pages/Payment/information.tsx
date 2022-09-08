@@ -72,7 +72,7 @@ const PaymentInformation = () => {
     const [cookies] = useCookies(['token']);
     const [rememberMeCookie] = useCookies<string>(['rememberMe']);
     const [initialFormikValues, setInitialFormikValues] = useState<formValues>(initialFormValues)
-
+    console.log('PaymentInformation')
     useLayoutEffect(() => {
         if (countSum === 0)
             router.replace('/404', '/Payment/information');
@@ -168,7 +168,7 @@ const PaymentInformation = () => {
 
     return (
         cookies.token &&
-        <DefaultLayout>
+        <>
             <div className='bg-secondary flex items-center justify-center w-full flex-col pb-16'>
                 <Head><title>تکمیل اطلاعات خرید</title></Head>
                 <BreadcrumbSection options={[]}/>
@@ -248,8 +248,15 @@ const PaymentInformation = () => {
                     </div>
                 </form>
             </div>
-        </DefaultLayout>
+        </>
     );
+}
+PaymentInformation.getLayout = function getLayout(page: any) {
+    return (
+        <DefaultLayout>
+            {page}
+        </DefaultLayout>
+    )
 }
 
 export default PaymentInformation;

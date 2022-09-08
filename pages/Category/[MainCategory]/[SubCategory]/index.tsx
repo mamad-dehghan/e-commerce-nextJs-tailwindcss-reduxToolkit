@@ -16,6 +16,7 @@ import parse3DigitNumber from "../../../../utilities/functions/parse3DigitNumber
 import style from './style.module.scss'
 import {getAllBrandNames} from "../../../../utilities/functions/ApiCall/brand";
 import Pagination from "../../../../components/costum/Pagination";
+import parse3digitNumber from "../../../../utilities/functions/parse3DigitNumber";
 
 
 type productDetailsType = {
@@ -88,7 +89,7 @@ const filterReducer = (state: filter, action: actionType) => {
 
 const SubCategory = ({products, categoryDetails, productsDetails, validCategory}: props) => {
     const router = useRouter();
-
+    console.log('SubCategory')
     useLayoutEffect(() => {
         if (!validCategory)
             router.replace('/404', `/Category/${router.query.MainCategory}/${router.query.SubCategory}`)
@@ -174,27 +175,20 @@ const SubCategory = ({products, categoryDetails, productsDetails, validCategory}
     }, [products, filter]);
 
     const sortProducts = useMemo(() => {
-        let sortProductsTemp;
         switch (sort) {
             case sortEnum.newest:
-                sortProductsTemp = filterProducts.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
-                break;
+                return  filterProducts.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
             case sortEnum.cheapest:
-                sortProductsTemp = filterProducts.sort((a, b) => parseInt(a.final_price) - parseInt(b.final_price));
-                break;
+                return  filterProducts.sort((a, b) => parse3DigitNumber(a.final_price) - parse3DigitNumber(b.final_price));
             case sortEnum.most_expensive:
-                sortProductsTemp = filterProducts.sort((a, b) => parseInt(b.final_price) - parseInt(a.final_price));
-                break;
+                return  filterProducts.sort((a, b) => parse3DigitNumber(b.final_price) - parse3digitNumber(a.final_price));
             case sortEnum.most_popular:
-                sortProductsTemp = filterProducts.sort((a, b) => a.sell - b.sell);
-                break;
+                return  filterProducts.sort((a, b) => a.sell - b.sell);
             case sortEnum.most_rating:
-                sortProductsTemp = filterProducts.sort((a, b) => b.attributes.rating - a.attributes.rating);
-                break;
+                return  filterProducts.sort((a, b) => (b.attributes.rating) - (a.attributes.rating));
             default:
-                sortProductsTemp = filterProducts.sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
+                return  filterProducts.sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
         }
-        return sortProductsTemp;
     }, [filterProducts, sort]);
 
     const pageProducts = useMemo(() => {
@@ -232,7 +226,6 @@ const SubCategory = ({products, categoryDetails, productsDetails, validCategory}
 
     return (
         validCategory &&
-        <DefaultLayout>
             <div className='w-full flex flex-row h-full grow'>
                 <Head>
                     <title>{categoryDetails.name}</title>
@@ -320,7 +313,6 @@ const SubCategory = ({products, categoryDetails, productsDetails, validCategory}
                     </div>
                 </div>
             </div>
-        </DefaultLayout>
     );
 }
 
@@ -434,6 +426,14 @@ export async function getServerSideProps(input: any) {
         {
             props
         }
+    )
+}
+
+SubCategory.getLayout = function getLayout(page: any) {
+    return (
+        <DefaultLayout>
+            {page}
+        </DefaultLayout>
     )
 }
 

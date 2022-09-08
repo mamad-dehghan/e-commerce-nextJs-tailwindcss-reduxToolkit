@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
+import React, {ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import Head from "next/head";
 import Image from 'next/image'
 import DefaultLayout from "../../layouts/DefaultLayout";
@@ -36,7 +36,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
     const dispatch = useDispatch();
     const router = useRouter();
     const {products} = useSelector((state:any) => state.BasketSlice)
-
+    console.log('SingleProduct')
     const initialAttribute = useMemo(()=>{
         const index:number = products.findIndex((item:any)=>item.product.id == router.query.id);
         if (index === -1){
@@ -50,7 +50,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                 size:products[index].attribute.size
             }
         }
-    },[])
+    },[router.query.id])
     // console.log(initialAttribute)
     const [selectedColor, setSelectedColor] = useState<string | undefined>(initialAttribute.color);
     const [selectedSize, setSelectedSize] = useState<string | number | undefined>(initialAttribute.size);
@@ -58,6 +58,8 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
 
     useLayoutEffect(() => {
         setSelectedImage(0)
+        setSelectedColor(initialAttribute.color)
+        setSelectedSize(initialAttribute.size)
         return () => {
             setSelectedImage(0)
         }
@@ -94,7 +96,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
     }, [dispatch, product])
 
     return (
-        <DefaultLayout>
+        <>
             <div className='w-full flex flex-col items-stretch'>
                 <Head>
                     <title>{product.name}</title>
@@ -257,7 +259,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                     }}
                 />
             </div>
-        </DefaultLayout>
+        </>
     );
 }
 
@@ -320,5 +322,11 @@ export async function getServerSideProps(input: any) {
         }
     }
 }
-
+SingleProduct.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <DefaultLayout>
+            {page}
+        </DefaultLayout>
+    )
+}
 export default SingleProduct;

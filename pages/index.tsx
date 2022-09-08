@@ -6,6 +6,7 @@ import axios from "axios";
 import IProduct from "../interfaces/product";
 import ICategory from "../interfaces/category";
 import _3DigitSeparator from "../utilities/functions/_3DigitSeparator";
+import {ReactElement} from "react";
 
 type packageCategoryProducts = {
     category: ICategory, products: IProduct[]
@@ -13,50 +14,46 @@ type packageCategoryProducts = {
 
 type props = {
     featured: IProduct[],
-    incredible:IProduct[],
+    incredible: IProduct[],
     categories: packageCategoryProducts[]
 }
 
 
 const Home = ({featured, incredible, categories}: props) => {
     return (
-        <>
+        <main className='bg-secondary'>
             <Head>
-                <title>WEEF Online Shop</title>
+                <title>فروشگاه اینترنتی ویف</title>
             </Head>
-            <DefaultLayout>
-                <main className='bg-secondary'>
-                    <Carousel/>
+            <Carousel/>
 
-                    {
-                        categories.map(category => (
-                            <Section
-                                key={category.category.id}
-                                wrapper={{
-                                    products: category.products,
-                                    category: category.category
-                                }}
-                            />
-                        ))
-                    }
-
+            {
+                categories.map(category => (
                     <Section
-                        slider={{
-                            title: 'محصولات پرفروش',
-                            products: featured
+                        key={category.category.id}
+                        wrapper={{
+                            products: category.products,
+                            category: category.category
                         }}
                     />
+                ))
+            }
 
-                    <Section
-                        slider={{
-                            title: 'فروش ویژه',
-                            products: incredible
-                        }}
-                    />
+            <Section
+                slider={{
+                    title: 'محصولات پرفروش',
+                    products: featured
+                }}
+            />
 
-                </main>
-            </DefaultLayout>
-        </>
+            <Section
+                slider={{
+                    title: 'فروش ویژه',
+                    products: incredible
+                }}
+            />
+
+        </main>
     )
 }
 
@@ -64,7 +61,7 @@ export async function getStaticProps() {
     let fetch: IProduct[] = await axios('http://localhost:8000/store/product/featured?format=json')
         .then((res: any) => res.data)
 
-    fetch = fetch.sort(()=> Math.random() - 0.5).slice(0, 15);
+    fetch = fetch.sort(() => Math.random() - 0.5).slice(0, 15);
 
     fetch = fetch.map(item => {
         return {
@@ -74,10 +71,10 @@ export async function getStaticProps() {
         }
     })
 
-let incredible: IProduct[] = await axios('http://localhost:8000/store/product/incredible')
+    let incredible: IProduct[] = await axios('http://localhost:8000/store/product/incredible')
         .then((res: any) => res.data)
 
-    incredible = incredible.sort(()=> Math.random() - 0.5).slice(0, 15);
+    incredible = incredible.sort(() => Math.random() - 0.5).slice(0, 15);
 
     incredible = incredible.map(item => {
         return {
@@ -113,6 +110,14 @@ let incredible: IProduct[] = await axios('http://localhost:8000/store/product/in
         }
     })
 
+}
+
+Home.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <DefaultLayout>
+            {page}
+        </DefaultLayout>
+    )
 }
 
 export default Home;
