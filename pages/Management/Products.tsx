@@ -8,7 +8,8 @@ import SortIcon from "../../utilities/icons/SortIcon";
 import AddProductModal from "../../components/costum/Management/AddProductModal";
 import Pagination from "../../components/costum/Pagination";
 import Head from "next/head";
-import ManagementLayout from "../../layouts/ManagementLayout";
+import ManagementLayout, {ManagementWrapper} from "../../layouts/ManagementLayout";
+import DefaultLayout from "../../layouts/DefaultLayout";
 
 enum sortEnum {
     price_asc = 'price_asc',
@@ -29,7 +30,7 @@ const ManagementProducts = () => {
     const [sortCategory, setSortCategory] = useState<[boolean, boolean]>([false, false])
     const [sortName, setSortName] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
-
+    console.log('ManagementProducts')
     const handleClickSortName = useCallback(() => {
         setSortCategory(([first,]) => [first, false])
         setSortPrice(([first,]) => [first, false])
@@ -138,7 +139,7 @@ const ManagementProducts = () => {
     }, [sort])
 
     return (
-        <ManagementLayout>
+        <>
             <Head><title>مدبربت کالاها</title></Head>
             <div
                 className='w-full bg-weef-black z-30 bg-primary p-0.5 gap-0.5 rounded-xl flex flex-col items-stretch'>
@@ -192,8 +193,18 @@ const ManagementProducts = () => {
                 openModal &&
                 <AddProductModal toggleOpen={setOpenModal} handleAddProduct={handleAddProduct}/>
             }
-        </ManagementLayout>
+        </>
     );
+}
+
+ManagementProducts.getLayout = function getLayout(page: any) {
+    return (
+        <ManagementWrapper>
+            <ManagementLayout>
+                {page}
+            </ManagementLayout>
+        </ManagementWrapper>
+    )
 }
 
 export default ManagementProducts;

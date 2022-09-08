@@ -7,7 +7,8 @@ import SortIcon from "../../utilities/icons/SortIcon";
 import Pagination from "../../components/costum/Pagination";
 import Head from "next/head";
 import Button from "../../components/common/Button";
-import ManagementLayout from "../../layouts/ManagementLayout";
+import ManagementLayout, {ManagementWrapper} from "../../layouts/ManagementLayout";
+import DefaultLayout from "../../layouts/DefaultLayout";
 
 enum sortEnum {
     price_asc = 'price_asc',
@@ -31,7 +32,7 @@ const ManagementStore = () => {
     const [sortName, setSortName] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
     const [sortFinalPrice, setSortFinalPrice] = useState<[boolean, boolean]>([false, false])
-
+    console.log('ManagementStore')
     const handleClickSortName = useCallback(() => {
         setSortRemaining(([first,]) => [first, false])
         setSortPrice(([first,]) => [first, false])
@@ -152,7 +153,7 @@ const ManagementStore = () => {
     }, [products])
 
     return (
-        <ManagementLayout>
+        <>
             <Head><title>مدیریت موجودی‌ها</title></Head>
             <div
                 className='w-full bg-weef-black z-30 bg-primary p-0.5 gap-0.5 rounded-xl flex flex-col items-stretch'>
@@ -208,8 +209,17 @@ const ManagementStore = () => {
                     </div>
                 </div>
             </div>
-        </ManagementLayout>
+        </>
     );
+}
+ManagementStore.getLayout = function getLayout(page: any) {
+    return (
+        <ManagementWrapper>
+            <ManagementLayout>
+                {page}
+            </ManagementLayout>
+        </ManagementWrapper>
+    )
 }
 
 export default ManagementStore;

@@ -9,7 +9,7 @@ import SortIcon from "../../utilities/icons/SortIcon";
 import {getAllUsersInformation, getAUserInformation} from "../../utilities/functions/ApiCall/user";
 import {ISuccessUser} from "../../interfaces/editUser";
 import Pagination from "../../components/costum/Pagination";
-import ManagementLayout from "../../layouts/ManagementLayout";
+import ManagementLayout, {ManagementWrapper} from "../../layouts/ManagementLayout";
 import Head from "next/head";
 
 
@@ -27,7 +27,7 @@ enum sortEnum {
     most_far
 }
 
-const Orders = () => {
+const ManagementOrders = () => {
     const [cookies] = useCookies(['token']);
     const [orders, setOrders] = useState<ISuccessOrder[]>([])
     const [filter, setFilter] = useState<filterEnum>(filterEnum.payed)
@@ -39,7 +39,7 @@ const Orders = () => {
     const [sortOrderDate, setSortOrderDate] = useState<[boolean, boolean]>([false, false])
     const [sortSendOrderDate, setSortSendOrderDate] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
-
+    console.log('Orders')
     useEffect(() => {
         getAllOrders(cookies.token)
             .then(res => {
@@ -149,7 +149,7 @@ const Orders = () => {
     }, [filter])
 
     return (
-        <ManagementLayout>
+        <>
             <Head><title>مدیریت سفارش‌ها</title></Head>
             <div
                 className='w-full bg-weef-black z-30 bg-primary p-0.5 gap-0.5 rounded-xl flex flex-col items-stretch'>
@@ -208,8 +208,17 @@ const Orders = () => {
                     </div>
                 </div>
             </div>
-        </ManagementLayout>
+        </>
     );
 }
+ManagementOrders.getLayout = function getLayout(page: any) {
+    return (
+        <ManagementWrapper>
+            <ManagementLayout>
+                {page}
+            </ManagementLayout>
+        </ManagementWrapper>
+    )
+}
 
-export default Orders;
+export default ManagementOrders;
