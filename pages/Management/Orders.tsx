@@ -9,7 +9,7 @@ import SortIcon from "../../utilities/icons/SortIcon";
 import {getAllUsersInformation, getAUserInformation} from "../../utilities/functions/ApiCall/user";
 import {ISuccessUser} from "../../interfaces/editUser";
 import Pagination from "../../components/costum/Pagination";
-import ManagementLayout, {ManagementWrapper} from "../../layouts/ManagementLayout";
+import ManagementLayout from "../../layouts/ManagementLayout";
 import Head from "next/head";
 
 
@@ -213,11 +213,9 @@ const ManagementOrders = () => {
 }
 ManagementOrders.getLayout = function getLayout(page: any) {
     return (
-        <ManagementWrapper>
-            <ManagementLayout>
-                {page}
-            </ManagementLayout>
-        </ManagementWrapper>
+        <ManagementLayout>
+            {page}
+        </ManagementLayout>
     )
 }
 

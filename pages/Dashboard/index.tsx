@@ -31,40 +31,46 @@ const Dashboard = () => {
                                     <label htmlFor="username" className='text-weef-white whitespace-nowrap'>نام
                                         کاربری:</label>
                                     <div className='w-[320px]'>
-                                    <Input value={userInformation.username || ''} disabled={true} type="text" id='username' widthOnPercent={100}
-                                           className='h-9 bg-weef-secondary-light'/>
+                                        <Input value={userInformation.username || ''} disabled={true} type="text"
+                                               id='username' widthOnPercent={100}
+                                               className='h-9 bg-weef-secondary-light'/>
                                     </div>
                                 </div>
                                 <div className='flex px-4 justify-between items-center'>
-                                    <label htmlFor="firstName" className='text-weef-white whitespace-nowrap'>نام:</label>
+                                    <label htmlFor="firstName"
+                                           className='text-weef-white whitespace-nowrap'>نام:</label>
                                     <div className='w-[320px]'>
-                                    <Input value={userInformation.first_name || ''} disabled={true} type="text" id='firstName' widthOnPercent={100}
-                                           className='h-9 bg-weef-secondary-light'/>
-                                </div>
+                                        <Input value={userInformation.first_name || ''} disabled={true} type="text"
+                                               id='firstName' widthOnPercent={100}
+                                               className='h-9 bg-weef-secondary-light'/>
+                                    </div>
                                 </div>
                                 <div className='flex px-4 justify-between items-center'>
                                     <label htmlFor="lastName"
                                            className='text-weef-white whitespace-nowrap'>نام‌خانوادگی:</label>
                                     <div className='w-[320px]'>
-                                    <Input value={userInformation.last_name || ''} disabled={true} type="text" id='lastName' widthOnPercent={100}
-                                           className='h-9 bg-weef-secondary-light'/>
-                                </div>
+                                        <Input value={userInformation.last_name || ''} disabled={true} type="text"
+                                               id='lastName' widthOnPercent={100}
+                                               className='h-9 bg-weef-secondary-light'/>
+                                    </div>
                                 </div>
                                 <div className='flex px-4 justify-between items-center'>
                                     <label htmlFor="email"
                                            className='text-weef-white whitespace-nowrap'>ایمیل:</label>
                                     <div className='w-[320px]'>
-                                    <Input value={userInformation.email || ''} disabled={true} type="text" id='email' widthOnPercent={100}
-                                           className='h-9 bg-weef-secondary-light'/>
-                                </div>
+                                        <Input value={userInformation.email || ''} disabled={true} type="text"
+                                               id='email' widthOnPercent={100}
+                                               className='h-9 bg-weef-secondary-light'/>
+                                    </div>
                                 </div>
                                 <div className='flex px-4 justify-between items-center'>
                                     <label htmlFor="phone"
                                            className='text-weef-white whitespace-nowrap'>تلفن‌همراه:</label>
                                     <div className='w-[320px]'>
-                                    <Input value={userInformation.phone || ''} disabled={true} type="text" id='phone' widthOnPercent={100}
-                                           className='h-9 bg-weef-secondary-light'/>
-                                </div>
+                                        <Input value={userInformation.phone || ''} disabled={true} type="text"
+                                               id='phone' widthOnPercent={100}
+                                               className='h-9 bg-weef-secondary-light'/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -80,12 +86,6 @@ const Dashboard = () => {
     );
 }
 
-Dashboard.getLayout = function getLayout(page: any) {
-    return (
-        <DefaultLayout>
-            {page}
-        </DefaultLayout>
-    )
-}
+Dashboard.getLayout = DefaultLayout
 
 export default Dashboard;

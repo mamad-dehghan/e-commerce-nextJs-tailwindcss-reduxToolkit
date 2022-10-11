@@ -6,7 +6,8 @@ type props = {
     children: ReactElement;
 }
 
-const DefaultLayout = ({children}: props) => {
+const Layout = ({children}: props) => {
+    console.log('DefaultLayout')
     return (
         <div className='w-full min-h-screen flex flex-col bg-secondary'>
             <Header/>
@@ -15,5 +16,10 @@ const DefaultLayout = ({children}: props) => {
         </div>
     );
 }
+const DefaultLayout = (page: ReactElement)=> (
+    <Layout>
+        {page}
+    </Layout>
+)
 
 export default DefaultLayout

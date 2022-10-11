@@ -6,7 +6,6 @@ import axios from "axios";
 import IProduct from "../interfaces/product";
 import ICategory from "../interfaces/category";
 import _3DigitSeparator from "../utilities/functions/_3DigitSeparator";
-import {ReactElement} from "react";
 
 type packageCategoryProducts = {
     category: ICategory, products: IProduct[]
@@ -112,12 +111,6 @@ export async function getStaticProps() {
 
 }
 
-Home.getLayout = function getLayout(page: ReactElement) {
-    return (
-        <DefaultLayout>
-            {page}
-        </DefaultLayout>
-    )
-}
+Home.getLayout = DefaultLayout
 
 export default Home;

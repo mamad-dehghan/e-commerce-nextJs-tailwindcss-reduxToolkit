@@ -7,7 +7,7 @@ import Button from "../../components/common/Button";
 import Link from "next/link";
 import {useFormik} from "formik";
 import * as Yup from 'yup';
-import {router} from "next/client";
+import {useRouter} from "next/router";
 import {useCookies} from "react-cookie";
 import {trySignIn} from "../../utilities/functions/ApiCall/signin";
 import {toast} from "react-toastify";
@@ -43,6 +43,7 @@ const SignInSchema = Yup.object().shape({
 
 
 const SignIn = () => {
+    const router = useRouter()
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [, setRememberMeCookie] = useCookies<string>(['rememberMe']);
     const formik = useFormik({

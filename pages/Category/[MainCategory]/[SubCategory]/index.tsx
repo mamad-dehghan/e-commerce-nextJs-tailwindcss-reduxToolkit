@@ -429,12 +429,6 @@ export async function getServerSideProps(input: any) {
     )
 }
 
-SubCategory.getLayout = function getLayout(page: any) {
-    return (
-        <DefaultLayout>
-            {page}
-        </DefaultLayout>
-    )
-}
+SubCategory.getLayout = DefaultLayout
 
 export default SubCategory;

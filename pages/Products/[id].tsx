@@ -1,4 +1,4 @@
-import React, {ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import Head from "next/head";
 import Image from 'next/image'
 import DefaultLayout from "../../layouts/DefaultLayout";
@@ -175,7 +175,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                                     </div>
                                     <div className='w-full gap-2 p-2 px-4 flex flex-col text-weef-white'>
                                         <div>مشخصات محصول:</div>
-                                        <p className='pl-24'>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</p>
+                                        <p className='md:pl-24'>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</p>
                                         <p>{product.description}</p>
                                     </div>
                                     <div className='w-full flex flex-col gap-2 py-2 px-4 items-start text-weef-white'>
@@ -241,7 +241,7 @@ const SingleProduct = ({singleProductDetails: {product, breadcrumb, category}, s
                                     </>
                                 }
                                 <div
-                                    className='rounded-full w-[480px] h-[480px] bg-primary p-0.5 overflow-hidden flex items-center justify-center'>
+                                    className='rounded-full w-[480px] h-[480px] bg-primary p-0.5 overflow-hidden flex items-center justify-center pointer-events-none'>
                                     <div className='w-full h-full bg-weef-black rounded-full overflow-hidden'>
                                         <Image objectFit={'cover'} width='478px' height='478px'
                                                src={product.images[selectedImage] || product.main_image}
@@ -322,11 +322,6 @@ export async function getServerSideProps(input: any) {
         }
     }
 }
-SingleProduct.getLayout = function getLayout(page: ReactElement) {
-    return (
-        <DefaultLayout>
-            {page}
-        </DefaultLayout>
-    )
-}
+SingleProduct.getLayout = DefaultLayout
+
 export default SingleProduct;

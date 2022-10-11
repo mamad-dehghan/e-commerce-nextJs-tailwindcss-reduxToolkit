@@ -57,12 +57,6 @@ const Basket = () => {
     );
 }
 
-Basket.getLayout = function getLayout(page: any) {
-    return (
-        <DefaultLayout>
-            {page}
-        </DefaultLayout>
-    )
-}
+Basket.getLayout = DefaultLayout
 
 export default Basket;

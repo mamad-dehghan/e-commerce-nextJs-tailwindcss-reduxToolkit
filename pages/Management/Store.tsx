@@ -7,8 +7,7 @@ import SortIcon from "../../utilities/icons/SortIcon";
 import Pagination from "../../components/costum/Pagination";
 import Head from "next/head";
 import Button from "../../components/common/Button";
-import ManagementLayout, {ManagementWrapper} from "../../layouts/ManagementLayout";
-import DefaultLayout from "../../layouts/DefaultLayout";
+import ManagementLayout from "../../layouts/ManagementLayout";
 
 enum sortEnum {
     price_asc = 'price_asc',
@@ -214,11 +213,9 @@ const ManagementStore = () => {
 }
 ManagementStore.getLayout = function getLayout(page: any) {
     return (
-        <ManagementWrapper>
-            <ManagementLayout>
-                {page}
-            </ManagementLayout>
-        </ManagementWrapper>
+        <ManagementLayout>
+            {page}
+        </ManagementLayout>
     )
 }
 
