@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const validateCoupon = (coupon: string) => {
-    console.log(coupon)
     return axios({
         url: 'http://localhost:8000/store/coupon/validate',
         method: "post",

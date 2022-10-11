@@ -29,7 +29,7 @@ const ManagementProducts = () => {
     const [sortCategory, setSortCategory] = useState<[boolean, boolean]>([false, false])
     const [sortName, setSortName] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
-
+    
     const handleClickSortName = useCallback(() => {
         setSortCategory(([first,]) => [first, false])
         setSortPrice(([first,]) => [first, false])
@@ -138,7 +138,7 @@ const ManagementProducts = () => {
     }, [sort])
 
     return (
-        <ManagementLayout>
+        <>
             <Head><title>مدبربت کالاها</title></Head>
             <div
                 className='w-full bg-weef-black z-30 bg-primary p-0.5 gap-0.5 rounded-xl flex flex-col items-stretch'>
@@ -192,8 +192,16 @@ const ManagementProducts = () => {
                 openModal &&
                 <AddProductModal toggleOpen={setOpenModal} handleAddProduct={handleAddProduct}/>
             }
-        </ManagementLayout>
+        </>
     );
+}
+
+ManagementProducts.getLayout = function getLayout(page: any) {
+    return (
+        <ManagementLayout>
+            {page}
+        </ManagementLayout>
+    )
 }
 
 export default ManagementProducts;

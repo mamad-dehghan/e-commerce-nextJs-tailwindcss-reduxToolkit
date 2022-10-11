@@ -1,5 +1,5 @@
 import React from 'react';
-import WaveBackground from "../../utilities/background/WaveBackground";
+import WaveBackground from "../../layouts/WaveBackground/WaveBackground";
 import WeefIcon from "../../utilities/icons/Weef";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
@@ -7,6 +7,7 @@ import Link from "next/link";
 import Head from "next/head";
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import DefaultLayout from "../../layouts/DefaultLayout";
 
 
 const LoginSchema = Yup.object().shape({
@@ -23,7 +24,7 @@ const LoginSchema = Yup.object().shape({
 
 
 const ResetPassword = () => {
-
+    console.log('ResetPassword')
     const formik = useFormik({
         initialValues: {
             userName: '',
@@ -36,11 +37,10 @@ const ResetPassword = () => {
     });
 
     return (
-        <div className='w-full h-screen flex items-center justify-center bg-secondary'>
+        <>
             <Head>
                 <title>صفحه بازیابی رمز عبور</title>
             </Head>
-            <WaveBackground/>
             <form
                 onSubmit={formik.handleSubmit}
                 className='flex flex-col items-stretch px-4 py-6 gap-3 bg-weef-black border z-20 border-primary-red rounded-lg w-[560px]'>
@@ -93,8 +93,14 @@ const ResetPassword = () => {
                     </Link>
                 </div>
             </form>
-        </div>
+        </>
     );
 }
-
+ResetPassword.getLayout = function getLayout(page: any) {
+    return (
+        <WaveBackground>
+            {page}
+        </WaveBackground>
+    )
+}
 export default ResetPassword;

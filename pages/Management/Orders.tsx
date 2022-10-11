@@ -27,7 +27,7 @@ enum sortEnum {
     most_far
 }
 
-const Orders = () => {
+const ManagementOrders = () => {
     const [cookies] = useCookies(['token']);
     const [orders, setOrders] = useState<ISuccessOrder[]>([])
     const [filter, setFilter] = useState<filterEnum>(filterEnum.payed)
@@ -149,7 +149,7 @@ const Orders = () => {
     }, [filter])
 
     return (
-        <ManagementLayout>
+        <>
             <Head><title>مدیریت سفارش‌ها</title></Head>
             <div
                 className='w-full bg-weef-black z-30 bg-primary p-0.5 gap-0.5 rounded-xl flex flex-col items-stretch'>
@@ -208,8 +208,15 @@ const Orders = () => {
                     </div>
                 </div>
             </div>
-        </ManagementLayout>
+        </>
     );
 }
+ManagementOrders.getLayout = function getLayout(page: any) {
+    return (
+        <ManagementLayout>
+            {page}
+        </ManagementLayout>
+    )
+}
 
-export default Orders;
+export default ManagementOrders;

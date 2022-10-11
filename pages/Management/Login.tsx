@@ -1,5 +1,5 @@
-import React from 'react';
-import WaveBackground from "../../utilities/background/WaveBackground";
+import React, {ReactElement} from 'react';
+import WaveBackground from "../../layouts/WaveBackground/WaveBackground";
 import WeefIcon from "../../utilities/icons/Weef";
 import Input from "../../components/common/Input";
 import Button from '../../components/common/Button';
@@ -31,7 +31,7 @@ const initialValues = {
 const ManagementLogin = () => {
     const router = useRouter();
     const [, setCookie, removeCookie] = useCookies(['token']);
-
+    console.log('ManagementLogin')
     const formik = useFormik({
         initialValues,
         validationSchema: LoginSchema,
@@ -41,6 +41,7 @@ const ManagementLogin = () => {
                     if (status === 200) {
                         if (response.userInfo.is_superuser) {
                             setCookie('token', response.token, {path: '/'});
+                            toast.success("ورود با موفقیت");
                             if (router.query.next !== undefined)
                                 router.replace(`${router.query.next}`);
                             else
@@ -59,8 +60,7 @@ const ManagementLogin = () => {
     });
 
     return (
-        <div className='w-full h-screen flex items-center justify-center bg-secondary'>
-            <WaveBackground/>
+        <>
             <Head><title>ورود مدیریت</title></Head>
             <form
                 onSubmit={formik.handleSubmit}
@@ -105,8 +105,16 @@ const ManagementLogin = () => {
                     <Button disable={!formik.isValid} type='submit' size='medium'>ورود</Button>
                 </div>
             </form>
-        </div>
+        </>
     );
+}
+
+ManagementLogin.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <WaveBackground>
+            {page}
+        </WaveBackground>
+    )
 }
 
 export default ManagementLogin;

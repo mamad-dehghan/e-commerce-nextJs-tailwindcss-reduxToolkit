@@ -2,7 +2,7 @@ import React, {useLayoutEffect, useState} from 'react';
 import WeefIcon from "../../utilities/icons/Weef";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
-import WaveBackground from "../../utilities/background/WaveBackground";
+import WaveBackground from "../../layouts/WaveBackground/WaveBackground";
 import Link from "next/link";
 import Head from "next/head";
 import {useFormik} from "formik";
@@ -11,6 +11,7 @@ import {useRouter} from "next/router";
 import {checkLogin, tryToLogin} from "../../utilities/functions/ApiCall/login";
 import {useCookies} from "react-cookie";
 import {toast} from 'react-toastify';
+import DefaultLayout from "../../layouts/DefaultLayout";
 
 type formValuesType = {
     username: string,
@@ -34,7 +35,7 @@ const Login = () => {
     const [rememberMe, setRememberMe] = useState<boolean>(rememberMeCookie.rememberMe === "true");
     const [initialFormValues, setInitialFormValues] = useState<formValuesType>({username: '', password: ''});
     const router = useRouter();
-
+    console.log('Login')
     useLayoutEffect(() => {
         if (rememberMeCookie.rememberMe) {
             checkLogin(cookies.token)
@@ -55,7 +56,7 @@ const Login = () => {
         initialValues: initialFormValues,
         validationSchema: LoginSchema,
         enableReinitialize: true,
-        onSubmit: values => {
+        onSubmit: (values, {setSubmitting}) => {
             setRemember('rememberMe', rememberMe, {path: '/'});
 
             tryToLogin(values)
@@ -71,17 +72,17 @@ const Login = () => {
                         removeCookie("token");
                         toast.error("کاربری با این مشخصات یافت نشد");
                         formik.resetForm();
+                        setSubmitting(false)
                     }
                 })
         },
     });
 
     return (
-        <div className='w-full h-screen flex items-center justify-center bg-secondary overflow-hidden'>
+        <>
             <Head>
                 <title>صفحه ورود</title>
             </Head>
-            <WaveBackground/>
             <form onSubmit={formik.handleSubmit}
                   className='flex flex-col items-stretch px-4 py-6 gap-3 bg-weef-black border z-20 border-primary-red rounded-lg w-[560px]'>
                 <div className='flex py-2 px-4 items-center justify-center '>
@@ -141,8 +142,16 @@ const Login = () => {
                     </Link>
                 </div>
             </form>
-        </div>
+        </>
     );
+}
+
+Login.getLayout = function getLayout(page: any) {
+    return (
+        <WaveBackground>
+            {page}
+        </WaveBackground>
+    )
 }
 
 export default Login;

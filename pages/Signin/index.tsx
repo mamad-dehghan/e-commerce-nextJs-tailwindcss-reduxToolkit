@@ -1,13 +1,13 @@
-import React, {useCallback, useState} from 'react';
+import React, {ReactElement, useCallback, useState} from 'react';
 import Head from "next/head";
-import WaveBackground from "../../utilities/background/WaveBackground";
+import WaveBackground from "../../layouts/WaveBackground/WaveBackground";
 import WeefIcon from "../../utilities/icons/Weef";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import Link from "next/link";
 import {useFormik} from "formik";
 import * as Yup from 'yup';
-import {router} from "next/client";
+import {useRouter} from "next/router";
 import {useCookies} from "react-cookie";
 import {trySignIn} from "../../utilities/functions/ApiCall/signin";
 import {toast} from "react-toastify";
@@ -43,6 +43,7 @@ const SignInSchema = Yup.object().shape({
 
 
 const SignIn = () => {
+    const router = useRouter()
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [, setRememberMeCookie] = useCookies<string>(['rememberMe']);
     const formik = useFormik({
@@ -56,7 +57,7 @@ const SignIn = () => {
             });
         },
     });
-
+    console.log('SignIn')
     const sendData = useCallback((values: any) => {
         trySignIn(values)
             .then(isValid => {
@@ -73,11 +74,10 @@ const SignIn = () => {
     }, [])
 
     return (
-        <div className='w-full h-screen flex items-center justify-center bg-secondary'>
+        <>
             <Head>
                 <title>ثبت‌نام</title>
             </Head>
-            <WaveBackground/>
             <form onSubmit={formik.handleSubmit}
                   className='flex flex-col items-stretch px-4 py-6 gap-3 bg-weef-black border z-20 border-primary-red rounded-lg w-[560px]'>
                 <div className='flex py-2 px-4 items-center justify-center '>
@@ -164,8 +164,16 @@ const SignIn = () => {
                     </Link>
                 </div>
             </form>
-        </div>
+        </>
     );
+}
+
+SignIn.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <WaveBackground>
+            {page}
+        </WaveBackground>
+    )
 }
 
 export default SignIn;

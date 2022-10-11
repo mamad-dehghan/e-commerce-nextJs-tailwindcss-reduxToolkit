@@ -31,7 +31,7 @@ const ManagementStore = () => {
     const [sortName, setSortName] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
     const [sortFinalPrice, setSortFinalPrice] = useState<[boolean, boolean]>([false, false])
-
+    
     const handleClickSortName = useCallback(() => {
         setSortRemaining(([first,]) => [first, false])
         setSortPrice(([first,]) => [first, false])
@@ -152,7 +152,7 @@ const ManagementStore = () => {
     }, [products])
 
     return (
-        <ManagementLayout>
+        <>
             <Head><title>مدیریت موجودی‌ها</title></Head>
             <div
                 className='w-full bg-weef-black z-30 bg-primary p-0.5 gap-0.5 rounded-xl flex flex-col items-stretch'>
@@ -208,8 +208,15 @@ const ManagementStore = () => {
                     </div>
                 </div>
             </div>
-        </ManagementLayout>
+        </>
     );
+}
+ManagementStore.getLayout = function getLayout(page: any) {
+    return (
+        <ManagementLayout>
+            {page}
+        </ManagementLayout>
+    )
 }
 
 export default ManagementStore;

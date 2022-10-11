@@ -14,9 +14,9 @@ import BasketDiscount from "../../components/costum/BasketDiscount";
 
 const Basket = () => {
     const {products} = useSelector((state: RootState) => state.BasketSlice);
-
+    
     return (
-        <DefaultLayout>
+        <>
             <div className='w-full flex flex-col'>
                 <Head><title>سبد خرید</title></Head>
                 <BreadcrumbSection options={[
@@ -53,8 +53,10 @@ const Basket = () => {
                     </div>
                 </div>
             </div>
-        </DefaultLayout>
+        </>
     );
 }
+
+Basket.getLayout = DefaultLayout
 
 export default Basket;

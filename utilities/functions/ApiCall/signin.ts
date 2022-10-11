@@ -9,6 +9,6 @@ export const trySignIn = (values: any) => {
         },
         data: JSON.stringify(values)
     })
-        .then(res => res.status === 200)
+        .then(res => res.status === 201)
         .catch(error => false)
 }

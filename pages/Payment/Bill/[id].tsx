@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {ReactElement, useEffect, useState} from 'react';
 import {useRouter} from "next/router";
 import {useCookies} from "react-cookie";
 import {ISuccessOrder} from "../../../interfaces/order";
 import Head from "next/head";
-import SolidBackground from "../../../utilities/background/SolidBackground";
+import SolidBackground from "../../../layouts/SolidBackground/SolidBackground";
 import AlertItem from "../../../components/costum/AlertItem";
 import Accept from "../../../utilities/icons/Accept";
 import Reject from "../../../utilities/icons/Reject";
@@ -14,7 +14,7 @@ const Bill = () => {
     const router = useRouter();
     const [cookies] = useCookies(['token']);
     const [order, setOrder] = useState<ISuccessOrder | undefined>(undefined)
-
+    console.log('Bill')
     useEffect(() => {
         if (router.query.id) {
             const orderId = parseInt(router.query.id as string)
@@ -33,11 +33,10 @@ const Bill = () => {
 
     return (
         order &&
-        <div className='w-full h-screen bg-secondary'>
+        <>
             <Head>
                 <title>قبض پرداخت</title>
             </Head>
-            <SolidBackground/>
             <div className='flex flex-col gap-2 justify-center items-center h-full w-full pb-16'>
                 {
                     order.status === 'payed' ?
@@ -57,8 +56,16 @@ const Bill = () => {
                 }
                 <AlertItem text='بازگشت به صفحه اصلی' link='/'/>
             </div>
-        </div>
+        </>
     );
+}
+
+Bill.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <SolidBackground>
+            {page}
+        </SolidBackground>
+    )
 }
 
 export default Bill;

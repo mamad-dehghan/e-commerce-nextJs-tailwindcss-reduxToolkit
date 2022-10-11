@@ -1,16 +1,16 @@
-import React from 'react';
-import SolidBackground from "../utilities/background/SolidBackground";
+import React, {ReactElement} from 'react';
+import SolidBackground from "../layouts/SolidBackground/SolidBackground";
 import AlertItem from "../components/costum/AlertItem";
 import Head from 'next/head';
 
 
 const _404 = () => {
+    console.log('_404')
     return (
-        <div className='w-full h-screen bg-secondary'>
+        <>
             <Head>
                 <title>صفحه مورد نظر یافت نشد</title>
             </Head>
-            <SolidBackground/>
             <div className='flex flex-col gap-2 justify-center items-center h-full w-full pb-16'>
                 <div className='flex pb-16'>
                     <div
@@ -38,8 +38,17 @@ const _404 = () => {
                 <AlertItem text={'متاسفانه صفحه مورد نظر یافت نشد'}/>
                 <AlertItem text={'بازگشت به صفحه اصلی'} link={'/'}/>
             </div>
-        </div>
+        </>
     );
 }
+
+_404.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <SolidBackground>
+            {page}
+        </SolidBackground>
+    )
+}
+
 
 export default _404;
