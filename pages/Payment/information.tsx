@@ -251,12 +251,6 @@ const PaymentInformation = () => {
         </>
     );
 }
-PaymentInformation.getLayout = function getLayout(page: any) {
-    return (
-        <DefaultLayout>
-            {page}
-        </DefaultLayout>
-    )
-}
+PaymentInformation.getLayout = DefaultLayout
 
 export default PaymentInformation;
