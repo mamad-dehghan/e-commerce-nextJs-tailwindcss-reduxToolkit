@@ -29,7 +29,7 @@ const ManagementProducts = () => {
     const [sortCategory, setSortCategory] = useState<[boolean, boolean]>([false, false])
     const [sortName, setSortName] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
-    console.log('ManagementProducts')
+    
     const handleClickSortName = useCallback(() => {
         setSortCategory(([first,]) => [first, false])
         setSortPrice(([first,]) => [first, false])

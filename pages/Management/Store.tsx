@@ -31,7 +31,7 @@ const ManagementStore = () => {
     const [sortName, setSortName] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
     const [sortFinalPrice, setSortFinalPrice] = useState<[boolean, boolean]>([false, false])
-    console.log('ManagementStore')
+    
     const handleClickSortName = useCallback(() => {
         setSortRemaining(([first,]) => [first, false])
         setSortPrice(([first,]) => [first, false])

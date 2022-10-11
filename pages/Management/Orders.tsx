@@ -39,7 +39,7 @@ const ManagementOrders = () => {
     const [sortOrderDate, setSortOrderDate] = useState<[boolean, boolean]>([false, false])
     const [sortSendOrderDate, setSortSendOrderDate] = useState<[boolean, boolean]>([true, true])
     const [sortPrice, setSortPrice] = useState<[boolean, boolean]>([false, false])
-    console.log('Orders')
+
     useEffect(() => {
         getAllOrders(cookies.token)
             .then(res => {

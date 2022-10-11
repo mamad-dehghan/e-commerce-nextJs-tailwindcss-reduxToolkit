@@ -84,7 +84,7 @@ const ProductCard = ({product}: props) => {
                 className={classNameDetails}>
                 <div className='flex flex-col py-4 gap-6 px-2'>
                     <div>{product.name}</div>
-                    <div>{product.final_price}<span className='pr-2'>تومان</span></div>
+                    <div>{product.price}<span className='pr-2'>تومان</span></div>
                     <div>
                         <Button
                             onClick={handleAddToBasket}

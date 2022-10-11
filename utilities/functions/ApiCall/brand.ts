@@ -34,6 +34,7 @@ export const findOrCreateBrand = async (token: string, brandName: string) => {
         .then(res => res)
 
     let findBrand = await allBrands.find((item: ISuccessBrand) => item.name === brandName)
+    
     if (!findBrand) {
         return createNewBrand(token, brandName)
             .then(([status, res]) => {

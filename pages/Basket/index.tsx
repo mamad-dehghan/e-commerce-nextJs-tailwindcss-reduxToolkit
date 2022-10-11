@@ -14,7 +14,7 @@ import BasketDiscount from "../../components/costum/BasketDiscount";
 
 const Basket = () => {
     const {products} = useSelector((state: RootState) => state.BasketSlice);
-    console.log('Basket')
+    
     return (
         <>
             <div className='w-full flex flex-col'>

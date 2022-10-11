@@ -18,9 +18,9 @@ const Dashboard = () => {
                     setUserInformation(response)
             })
     }, [])
+    
     console.log('Dashboard')
     return (
-        <>
             <div className='flex flex-col w-full grow'>
                 <Head><title>Dashboard</title></Head>
                 {
@@ -82,7 +82,6 @@ const Dashboard = () => {
                         </div>
                 }
             </div>
-        </>
     );
 }
 

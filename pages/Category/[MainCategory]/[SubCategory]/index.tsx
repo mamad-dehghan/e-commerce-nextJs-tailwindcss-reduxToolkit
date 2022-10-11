@@ -89,7 +89,7 @@ const filterReducer = (state: filter, action: actionType) => {
 
 const SubCategory = ({products, categoryDetails, productsDetails, validCategory}: props) => {
     const router = useRouter();
-    console.log('SubCategory')
+    
     useLayoutEffect(() => {
         if (!validCategory)
             router.replace('/404', `/Category/${router.query.MainCategory}/${router.query.SubCategory}`)
@@ -329,6 +329,7 @@ export async function getServerSideProps(input: any) {
     }
     if (props.validCategory) {
         const searchIsAvailable = input.query.search ? input.query.search.length > 2 : false;
+
 
         const allBrands = await getAllBrandNames()
         const getBrandNameById = (id: string) => {
